@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Dashboard - AppointScheduler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col" x-data="businessDashboard()">
+<!-- Header -->
+ <header class="bg-white shadow-lg py-4">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <img src="../../public/images/logo.png" alt="AppointScheduler Logo" class="mr-2 rounded-full shadow-sm" style="height:50px; width:50px;">
+
+                <span class="text-2xl font-extrabold text-gray-900">AppointScheduler</span>
+            </div>
+
+            <div class="w-full md:w-1/3 mb-4 md:mb-0 relative">
+                <input type="text" placeholder="Search for services or providers..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex space-x-2">
+                <a href="index.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Home</a>
+                <a href="#" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">About Us</a>
+                <a href="#" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Services</a>
+                <a href="#" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Your Cert.</a>
+                <a href="#" class="text-blue-600 font-semibold py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Login/Sign Up</a>
+            </nav>
+
+            <div class="md:hidden" x-data="{ open: false }">
+                <button @click="open = !open" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+
+                <div x-show="open" @click.away="open = false" class="absolute top-44 right-4 bg-white shadow-lg rounded-md p-4 space-y-2 z-10 w-48 border border-gray-200">
+                    <a href="index.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Home</a>
+                    <a href="#" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">About Us</a>
+                    <a href="#" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Services</a>
+                    <a href="#" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Your Cert.</a>
+                    <a href="#" class="block text-blue-600 font-semibold py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm transition duration-300">Login/Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+<!-- Main Content -->
+<main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4 md:mb-0">Business Dashboard</h2>
+        <button
+                @click="openAddBusinessModal()"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md shadow-sm transition-colors duration-200 flex items-center">
+            <i class="fas fa-plus mr-2"></i> Add Business
+        </button>
+    </div>
+
+    <!-- Analytics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-gray-500 text-sm font-medium mb-2">Total Businesses</h3>
+            <p class="text-3xl font-bold text-gray-900" x-text="businesses.length">0</p>
+            <div class="flex items-center mt-2">
+                    <span class="text-green-600 text-sm font-medium">
+                        <i class="fas fa-arrow-up mr-1"></i> 12%
+                    </span>
+                <span class="text-gray-500 text-sm ml-2">from last month</span>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-gray-500 text-sm font-medium mb-2">Total Revenue</h3>
+            <p class="text-3xl font-bold text-gray-900">$24,520</p>
+            <div class="flex items-center mt-2">
+                    <span class="text-green-600 text-sm font-medium">
+                        <i class="fas fa-arrow-up mr-1"></i> 8.3%
+                    </span>
+                <span class="text-gray-500 text-sm ml-2">from last month</span>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-gray-500 text-sm font-medium mb-2">Outstanding Balance</h3>
+            <p class="text-3xl font-bold text-gray-900">$2,850</p>
+            <div class="flex items-center mt-2">
+                    <span class="text-red-600 text-sm font-medium">
+                        <i class="fas fa-arrow-up mr-1"></i> 4.1%
+                    </span>
+                <span class="text-gray-500 text-sm ml-2">from last month</span>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-gray-500 text-sm font-medium mb-2">Active Subscriptions</h3>
+            <p class="text-3xl font-bold text-gray-900">86%</p>
+            <div class="flex items-center mt-2">
+                    <span class="text-green-600 text-sm font-medium">
+                        <i class="fas fa-arrow-up mr-1"></i> 2.4%
+                    </span>
+                <span class="text-gray-500 text-sm ml-2">from last month</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            <div class="md:w-1/3">
+                <div class="relative rounded-md">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input
+                            type="text"
+                            x-model="searchQuery"
+                            @input="filterBusinesses()"
+                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 px-4 border"
+                            placeholder="Search businesses...">
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                <div class="relative">
+                    <select
+                            x-model="filterOption"
+                            @change="filterBusinesses()"
+                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-2 px-4 border appearance-none pr-8">
+                        <option value="">Filter By...</option>
+                        <option value="timezone">Time Zone</option>
+                        <option value="recent">Recently Added</option>
+                        <option value="updated">Recently Updated</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                </div>
+                <button
+                        @click="resetFilters()"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-md shadow-sm transition-colors duration-200">
+                    Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Table -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        ID
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Business Name
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Contact Information
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Time Zone
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Dates
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                    </th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                <template x-for="(business, index) in paginatedBusinesses" :key="business.id">
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="business.id"></td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900" x-text="business.name"></div>
+                            <div class="text-sm text-gray-500" x-text="business.address"></div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900" x-text="business.phone"></div>
+                            <div class="text-sm text-gray-500" x-text="business.email"></div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="business.timezone"></td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500">Joined: <span x-text="formatDate(business.created_at)"></span></div>
+                            <div class="text-sm text-gray-500">Updated: <span x-text="formatDate(business.updated_at)"></span></div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button @click="viewBusinessDetails(business)" class="text-indigo-600 hover:text-indigo-900">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button @click="openEditBusinessModal(business)" class="text-blue-600 hover:text-blue-900">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button @click="confirmDeleteBusiness(business)" class="text-red-600 hover:text-red-900">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+                <tr x-show="filteredBusinesses.length === 0">
+                    <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                        No businesses found. Try adjusting your search or filters.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+            <div class="flex items-center justify-between">
+                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Showing
+                            <span class="font-medium" x-text="paginationStart + 1"></span>
+                            to
+                            <span class="font-medium" x-text="Math.min(paginationStart + itemsPerPage, filteredBusinesses.length)"></span>
+                            of
+                            <span class="font-medium" x-text="filteredBusinesses.length"></span>
+                            results
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                            <button
+                                    @click="previousPage()"
+                                    :disabled="currentPage === 1"
+                                    :class="{'opacity-50 cursor-not-allowed': currentPage === 1}"
+                                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Previous</span>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <template x-for="page in totalPages" :key="page">
+                                <button
+                                        @click="goToPage(page)"
+                                        :class="{'bg-indigo-50 border-indigo-500 text-indigo-600': page === currentPage, 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50': page !== currentPage}"
+                                        class="relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                    <span x-text="page"></span>
+                                </button>
+                            </template>
+                            <button
+                                    @click="nextPage()"
+                                    :disabled="currentPage === totalPages"
+                                    :class="{'opacity-50 cursor-not-allowed': currentPage === totalPages}"
+                                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Next</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- View Business Modal -->
+<div x-show="isViewModalOpen"
+     class="fixed inset-0 z-10 overflow-y-auto"
+     x-cloak>
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div x-show="isViewModalOpen"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 transition-opacity"
+             aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div x-show="isViewModalOpen"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div>
+                    <div class="mt-3 sm:mt-0 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" x-text="'Business Details: ' + (currentBusiness ? currentBusiness.name : '')"></h3>
+                        <div class="mt-4 space-y-3">
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-500">Business ID</h4>
+                                <p class="text-gray-900" x-text="currentBusiness ? currentBusiness.id : ''"></p>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-500">Name</h4>
+                                <p class="text-gray-900" x-text="currentBusiness ? currentBusiness.name : ''"></p>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-500">Address</h4>
+                                <p class="text-gray-900" x-text="currentBusiness ? currentBusiness.address : ''"></p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="text-sm font-semibold text-gray-500">Phone</h4>
+                                    <p class="text-gray-900" x-text="currentBusiness ? currentBusiness.phone : ''"></p>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-gray-500">Email</h4>
+                                    <p class="text-gray-900" x-text="currentBusiness ? currentBusiness.email : ''"></p>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-500">Website</h4>
+                                <p class="text-gray-900" x-text="currentBusiness ? currentBusiness.website : ''"></p>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-500">Time Zone</h4>
+                                <p class="text-gray-900" x-text="currentBusiness ? currentBusiness.timezone : ''"></p>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-gray-500">Cancellation Policy</h4>
+                                <p class="text-gray-900" x-text="currentBusiness ? currentBusiness.cancellation_policy : ''"></p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="text-sm font-semibold text-gray-500">Joined Date</h4>
+                                    <p class="text-gray-900" x-text="currentBusiness ? formatDate(currentBusiness.created_at) : ''"></p>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-gray-500">Updated Date</h4>
+                                    <p class="text-gray-900" x-text="currentBusiness ? formatDate(currentBusiness.updated_at) : ''"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button @click="closeViewModal()" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Business Modal -->
+<div x-show="isFormModalOpen"
+     class="fixed inset-0 z-10 overflow-y-auto"
+     x-cloak>
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div x-show="isFormModalOpen"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 transition-opacity"
+             aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div x-show="isFormModalOpen"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div>
+                    <div class="mt-3 sm:mt-0 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" x-text="isEditing ? 'Edit Business' : 'Add New Business'"></h3>
+                        <form class="mt-4 space-y-4" @submit.prevent="submitBusinessForm">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700">Business Name</label>
+                                <input type="text" id="name" x-model="businessForm.name" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md py-2 px-3 border">
+                            </div>
+                            <div>
+                                <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                                <input type="text" id="address" x-model="businessForm.address" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md py-2 px-3 border">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                                    <input type="text" id="phone" x-model="businessForm.phone" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md py-2 px-3 border">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                                    <input type="email" id="email" x-model="businessForm.email" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md py-2 px-3 border">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
+                                <input type="url" id="website" x-model="businessForm.website" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md py-2 px-3 border">
+                            </div>
+                            <div>
+                                <label for="timezone" class="block text-sm font-medium text-gray-700">Time Zone</label>
+                                <select id="timezone" x-model="businessForm.timezone" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md py-2 px-3 border">
+                                    <option value="">Select a timezone</option>
+                                    <option value="America/New_York">America/New_York (EDT/EST)</option>
+                                    <option value="America/Chicago">America/Chicago (CDT/CST)</option>
+                                    <option value="America/Denver">America/Denver (MDT/MST)</option>
+                                    <option value="America/Los_Angeles">America/Los_Angeles (PDT/PST)</option>
+                                    <option value="America/Phoenix">America/Phoenix (MST)</option>
+                                    <option value="America/Anchorage">America/Anchorage (AKDT/AKST)</option>
+                                    <option value="America/Honolulu">America/Honolulu (HST)</option>
+                                    <option value="Europe/London">Europe/London (BST/GMT)</option>
+                                    <option value="Europe/Paris">Europe/Paris (CEST/CET)</option>
+                                    <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="cancellation_policy" class="block text-sm font-medium text-gray-700">Cancellation Policy</label>
+                                <textarea id="cancellation_policy" x-model="businessForm.cancellation_policy" rows="3" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md py-2 px-3 border"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button @click="submitBusinessForm()" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    <span x-text="isEditing ? 'Update' : 'Add'"></span>
+                </button>
+                <button @click="closeFormModal()" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div x-show="isDeleteModalOpen"
+     class="fixed inset-0 z-10 overflow-y-auto"
+     x-cloak>
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div x-show="isDeleteModalOpen"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 transition-opacity"
+             aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div x-show="isDeleteModalOpen"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <i class="fas fa-exclamation-triangle text-red-600"></i>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Delete Business</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">
+                                Are you sure you want to delete <span class="font-semibold" x-text="currentBusiness ? currentBusiness.name : ''"></span>? This action cannot be undone.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button @click="deleteBusiness()" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Delete
+                </button>
+                <button @click="closeDeleteModal()" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+ <footer class="bg-gray-900 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-4 text-gray-300">&copy; 2025 AppointScheduler. All rights reserved.</p>
+            <div class="flex justify-center space-x-7 mb-6">
+                <a href="https://facebook.com/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-500 transition duration-300 transform hover:scale-110">
+                    <i class="fab fa-facebook-f fa-2x"></i>
+                </a>
+                <a href="https://x.com/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-400 transition duration-300 transform hover:scale-110">
+                    <i class="fab fa-twitter fa-2x"></i>
+                </a>
+                <a href="https://linkedin.com/company/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-600 transition duration-300 transform hover:scale-110">
+                    <i class="fab fa-linkedin-in fa-2x"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-red-600 transition duration-300 transform hover:scale-110">
+                    <i class="fab fa-youtube fa-2x"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-pink-500 transition duration-300 transform hover:scale-110">
+                    <i class="fab fa-instagram fa-2x"></i>
+                </a>
+            </div>
+            <p class="text-sm">
+                <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Privacy Policy</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Terms of Service</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Contact Us</a> |
+                <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">FAQ</a>
+            </p>
+        </div>
+    </footer>
+
+<script>
+    function businessDashboard() {
+        return {
+            businesses: [],
+            filteredBusinesses: [],
+            paginatedBusinesses: [],
+            currentBusiness: null,
+            isViewModalOpen: false,
+            isFormModalOpen: false,
+            isDeleteModalOpen: false,
+            isEditing: false,
+            searchQuery: '',
+            filterOption: '',
+            currentPage: 1,
+            itemsPerPage: 5,
+            totalPages: 1,
+            paginationStart: 0,
+            businessForm: {
+                id: null,
+                name: '',
+                address: '',
+                phone: '',
+                email: '',
+                website: '',
+                timezone: '',
+                cancellation_policy: ''
+            },
+
+            // Lifecycle Methods
+            init() {
+                this.fetchBusinesses();
+            },
+
+            // API Methods
+            async fetchBusinesses() {
+                try {
+                    const response = await fetch('https://appointment-scheduler-backend-smss.onrender.com/businesses/');
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    this.businesses = data;
+                    this.filterBusinesses();
+                } catch (error) {
+                    console.error('Error fetching businesses:', error);
+                    // Show error notification to the user
+                    alert('Failed to load businesses. Please try again later.');
+                }
+            },
+
+            async addBusiness() {
+                try {
+                    const response = await fetch('https://appointment-scheduler-backend-smss.onrender.com/businesses/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(this.businessForm),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const newBusiness = await response.json();
+                    this.businesses.push(newBusiness);
+                    this.filterBusinesses();
+                    this.closeFormModal();
+                    alert('Business added successfully!');
+                } catch (error) {
+                    console.error('Error adding business:', error);
+                    alert('Failed to add business. Please try again.');
+                }
+            },
+
+            async updateBusiness() {
+                try {
+                    const response = await fetch(`https://appointment-scheduler-backend-smss.onrender.com/businesses/${this.businessForm.id}/`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(this.businessForm),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const updatedBusiness = await response.json();
+                    const index = this.businesses.findIndex(b => b.id === updatedBusiness.id);
+                    if (index !== -1) {
+                        this.businesses[index] = updatedBusiness;
+                    }
+                    this.filterBusinesses();
+                    this.closeFormModal();
+                    alert('Business updated successfully!');
+                } catch (error) {
+                    console.error('Error updating business:', error);
+                    alert('Failed to update business. Please try again.');
+                }
+            },
+
+            async deleteBusiness() {
+                if (!this.currentBusiness) return;
+
+                try {
+                    const response = await fetch(`https://appointment-scheduler-backend-smss.onrender.com/businesses/${this.currentBusiness.id}/`, {
+                        method: 'DELETE',
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    this.businesses = this.businesses.filter(b => b.id !== this.currentBusiness.id);
+                    this.filterBusinesses();
+                    this.closeDeleteModal();
+                    alert('Business deleted successfully!');
+                } catch (error) {
+                    console.error('Error deleting business:', error);
+                    alert('Failed to delete business. Please try again.');
+                }
+            },
+
+            // UI Methods
+            viewBusinessDetails(business) {
+                this.currentBusiness = business;
+                this.isViewModalOpen = true;
+            },
+
+            openAddBusinessModal() {
+                this.isEditing = false;
+                this.businessForm = {
+                    id: null,
+                    name: '',
+                    address: '',
+                    phone: '',
+                    email: '',
+                    website: '',
+                    timezone: '',
+                    cancellation_policy: ''
+                };
+                this.isFormModalOpen = true;
+            },
+
+            openEditBusinessModal(business) {
+                this.isEditing = true;
+                this.businessForm = { ...business };
+                this.isFormModalOpen = true;
+            },
+
+            confirmDeleteBusiness(business) {
+                this.currentBusiness = business;
+                this.isDeleteModalOpen = true;
+            },
+
+            submitBusinessForm() {
+                if (this.isEditing) {
+                    this.updateBusiness();
+                } else {
+                    this.addBusiness();
+                }
+            },
+
+            closeViewModal() {
+                this.isViewModalOpen = false;
+                this.currentBusiness = null;
+            },
+
+            closeFormModal() {
+                this.isFormModalOpen = false;
+                this.isEditing = false;
+                this.businessForm = {
+                    id: null,
+                    name: '',
+                    address: '',
+                    phone: '',
+                    email: '',
+                    website: '',
+                    timezone: '',
+                    cancellation_policy: ''
+                };
+            },
+
+            closeDeleteModal() {
+                this.isDeleteModalOpen = false;
+                this.currentBusiness = null;
+            },
+
+            // Formatting Methods
+            formatDate(dateString) {
+                if (!dateString) return '';
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            },
+
+            // Filtering and Pagination Methods
+            filterBusinesses() {
+                let filtered = [...this.businesses];
+
+                // Apply search filter
+                if (this.searchQuery) {
+                    const query = this.searchQuery.toLowerCase();
+                    filtered = filtered.filter(business =>
+                        business.name.toLowerCase().includes(query) ||
+                        business.address.toLowerCase().includes(query) ||
+                        business.email.toLowerCase().includes(query) ||
+                        business.phone.includes(query)
+                    );
+                }
+
+                // Apply dropdown filters
+                if (this.filterOption) {
+                    switch(this.filterOption) {
+                        case 'timezone':
+                            filtered.sort((a, b) => a.timezone.localeCompare(b.timezone));
+                            break;
+                        case 'recent':
+                            filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                            break;
+                        case 'updated':
+                            filtered.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+                            break;
+                    }
+                }
+
+                this.filteredBusinesses = filtered;
+                this.calculatePagination();
+            },
+
+            resetFilters() {
+                this.searchQuery = '';
+                this.filterOption = '';
+                this.filterBusinesses();
+            },
+
+            calculatePagination() {
+                this.totalPages = Math.ceil(this.filteredBusinesses.length / this.itemsPerPage);
+
+                if (this.currentPage > this.totalPages) {
+                    this.currentPage = this.totalPages || 1;
+                }
+
+                this.paginationStart = (this.currentPage - 1) * this.itemsPerPage;
+
+                this.paginatedBusinesses = this.filteredBusinesses.slice(
+                    this.paginationStart,
+                    this.paginationStart + this.itemsPerPage
+                );
+            },
+
+            nextPage() {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                    this.calculatePagination();
+                }
+            },
+
+            previousPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                    this.calculatePagination();
+                }
+            },
+
+            goToPage(page) {
+                this.currentPage = page;
+                this.calculatePagination();
+            }
+        }
+    }
+</script>
+</body>
+</html>
