@@ -90,7 +90,7 @@ Tasks:
 -	Using HTML5, Tailwind CSS for styling and Alpine js for interactivity to create this page
 -   Use header and footer of the attached  index.html  page on this business dashboard
 -	Perform generic CRUD operations on businesses like adding/editing/view/deleting business
--	Show reporting and analytics information about businesses like generated revenue from each business, outstanding balance, their subscription status and more.
+-	Show reporting and analytics information about businesses like generated revenue from each business, outstanding balance, their subscription status, and more.
 -	Manage services and businesses
 -  Use pagination when displaying business information 
 -   Allow user to search, filter and reset the page within business information 
@@ -114,4 +114,158 @@ The response is coming back in JSON format as the following, a list of dictionar
 ...
 ]
 "
+
+
+### 3. Client Page (client-page.html)
+Once logged in, clients can access various functions, such as:
+•	Viewing appointment history.
+•	Booking new appointments.
+•	Modifying or canceling existing appointments.
+•	Editing personal profile information.
+Clients interact with the following sections:
+•	Clients
+•	Appointments
+•	Services
+•	Businesses
+
+Context:
+
+with assumption that the login user/client name is John doe, display the personal client page following the below specifications:
+
+Create a client page that Once logged in, clients can access various functions, such as:
+•	Viewing appointment history.
+•	Booking new appointments.
+•	Modifying or canceling existing appointments.
+•	Editing personal profile information.
+
+
+It should be able to view service, select it, and book the appointment after entering payment information.
+The responses are coming in JSON format as the following:
+
+•	Clients information: URL: https://appointment-scheduler-backend-smss.onrender.com/clients
+and it is coming back as JSON: 
+"
+[
+    {
+        "id": 1,
+        "business_id": 1,
+        "first_name": "Robert",
+        "last_name": "Smith",
+        "email": "robert.smith@email.com",
+        "phone": "(503) 555-1001",
+        "date_of_birth": "1985-07-15",
+        "preferred_staff_id": 1,
+        "notes": "Prefers firm pressure during massages.",
+        "created_at": "2025-04-28T18:12:14.597614Z",
+        "updated_at": "2025-04-28T18:12:14.597614Z"
+    },
+
+...
+]
+"
+
+•	Appointments information: URL: https://appointment-scheduler-backend-smss.onrender.com/appointments
+the response is coming back as a JSON format as the following: 
+"
+[
+    {
+        "id": 3,
+        "business_id": 2,
+        "client_id": 3,
+        "service_id": 3,
+        "staff_id": 3,
+        "start_time": "2024-06-10T15:30:00Z",
+        "end_time": "2024-06-10T16:00:00Z",
+        "status": "completed",
+        "notes": "Regular monthly haircut.",
+        "created_at": "2025-04-28T18:12:53.011892Z",
+        "updated_at": "2025-04-28T18:12:53.011892Z"
+    },
+...
+]
+"
+
+•	Services Information: URL/endpoint api: https://appointment-scheduler-backend-smss.onrender.com/services
+The response is coming in JSON format as the following:
+"
+[
+    {
+        "id": 1,
+        "business_id": 1,
+        "category_id": 1,
+        "name": "Swedish Massage",
+        "description": "60-minute full body massage using gentle pressure and long strokes to promote relaxation.",
+        "duration": 60,
+        "buffer_time": 15,
+        "max_clients": 1,
+        "price": 85.0,
+        "is_active": true,
+        "created_at": "2025-04-28T18:11:58.027757Z",
+        "updated_at": "2025-04-28T18:11:58.027757Z"
+    },
+...
+]
+"
+
+•	Businesses Information: URL/endpoint api: https://appointment-scheduler-backend-smss.onrender.com/businesses/
+the response is coming back in JSON format as the following:
+"
+[
+    {
+        "id": 3,
+        "name": "Serene Dental Care",
+        "address": "789 Healthcare Blvd, Miami, FL 33130",
+        "phone": "(305) 555-9876",
+        "email": "reception@serenedental.com",
+        "website": "www.serenedental.com",
+        "timezone": "America/New_York",
+        "cancellation_policy": "A 48-hour notice is required for cancellation. Late cancellations may incur a $50 fee.",
+        "created_at": "2025-04-28T18:11:28.857151Z",
+        "updated_at": "2025-04-28T18:11:28.857151Z"
+    },
+...
+]
+"
+
+
+======================================
+
+4) 4. Service Setup Page (service-setup.html)
+
+Context:
+
+I want to develop a service page that shows all available services by categories. allows manager to perform CRUD operation on them.
+
+Businesses can manage their services and availability through this section, performing essential CRUD (Create, Read, Update, Delete) operations, including:
+•	Adding, editing, or removing services visible to the public.
+•	Managing appointments and client interactions.
+
+Display Business ID, Name, Description, and Joined date.
+in addition, allowing business to create a new service based on their specifications.
+
+Use html5 for structure, tailwindCSS for styling, and alpine js for interactivity.
+
+the data source for service categories is the following URL:https://appointment-scheduler-backend-smss.onrender.com/service-categories
+
+and the response is coming back in json format as the following:
+
+"
+[
+    {
+        "id": 1,
+        "business_id": 1,
+        "name": "Massage Therapy",
+        "description": "Relax and rejuvenate with our range of massage treatments designed to reduce stress and tension.",
+        "created_at": "2025-04-28T18:11:49.990330Z",
+        "updated_at": "2025-04-28T18:11:49.990330Z"
+    },
+...
+]
+
+"
+
+
+
+
+
 

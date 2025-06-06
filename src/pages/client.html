@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard - John Doe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --text-color: #5a5c69;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            color: var(--text-color);
+            background-color: #f8f9fc;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary-color) 0%, #224abe 100%);
+            min-height: 100vh;
+        }
+
+        .sidebar-brand {
+            color: white;
+            font-weight: 800;
+            font-size: 1.2rem;
+            padding: 1.5rem 1rem;
+            text-align: center;
+        }
+
+        .nav-item {
+            position: relative;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            border-radius: 0.35rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+        }
+
+        .content {
+            padding: 1.5rem;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            border-radius: 0.35rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1rem 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .table th {
+            font-weight: 600;
+            background-color: var(--secondary-color);
+        }
+
+        .appointment-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #2653d4;
+            border-color: #2653d4;
+        }
+
+        .service-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
+        }
+
+        .service-card.selected {
+            border: 2px solid var(--primary-color);
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+
+        #content-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 1rem;
+            background-color: white;
+            border-top: 1px solid #e3e6f0;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar col-lg-2 col-md-3 px-0">
+        <div class="sidebar-brand">
+            <i class="fas fa-calendar-check"></i>
+            <div>Appointment Scheduler</div>
+        </div>
+        <hr class="sidebar-divider my-0 bg-light opacity-25">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" id="nav-dashboard">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="nav-appointments">
+                    <i class="fas fa-fw fa-calendar"></i>
+                    <span>Appointments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="nav-book">
+                    <i class="fas fa-fw fa-plus-circle"></i>
+                    <span>Book Appointment</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="nav-profile">
+                    <i class="fas fa-fw fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+        </ul>
+        <hr class="sidebar-divider d-none d-md-block bg-light opacity-25">
+    </div>
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="col-lg-10 col-md-9 ms-auto">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+            <div class="container-fluid">
+                <button class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <h1 class="h3 mb-0 text-gray-800">Client Dashboard</h1>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">John Doe</span>
+                            <div class="user-avatar">JD</div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end shadow animated--grow-in" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="#" id="dropdown-profile">
+                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Profile
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section active">
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">Welcome, John!</h1>
+                </div>
+
+                <div class="row">
+                    <!-- Quick Stats -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Upcoming Appointments</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="upcoming-count">0</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            Total Appointments</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-count">0</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            Next Appointment</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="next-appointment">None</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            Favorite Business</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="fav-business">-</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-star fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Appointments -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Upcoming Appointments</h6>
+                        <a href="#" class="btn btn-primary btn-sm" id="new-appointment-btn">
+                            <i class="fas fa-plus"></i> New Appointment
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div id="upcoming-appointments-list" class="row">
+                            <!-- Will be populated via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments History Section -->
+            <div id="appointments-section" class="section">
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">Appointment History</h1>
+                    <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="book-new-btn">
+                        <i class="fas fa-plus fa-sm text-white-50"></i> Book New Appointment
+                    </a>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Filter Appointments</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="status-filter" class="form-label">Status</label>
+                                <select id="status-filter" class="form-select">
+                                    <option value="all">All</option>
+                                    <option value="confirmed">Confirmed</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="canceled">Canceled</option>
+                                    <option value="no-show">No Show</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="service-filter" class="form-label">Service</label>
+                                <select id="service-filter" class="form-select">
+                                    <option value="all">All</option>
+                                    <!-- Will be populated via JavaScript -->
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="date-from" class="form-label">From</label>
+                                <input type="date" id="date-from" class="form-control">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="date-to" class="form-label">To</label>
+                                <input type="date" id="date-to" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 text-end">
+                                <button id="apply-filter" class="btn btn-primary">Apply Filters</button>
+                                <button id="reset-filter" class="btn btn-secondary">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appointments Table -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">All Appointments</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="appointmentsTable" width="100%" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Service</th>
+                                    <th>Staff</th>
+                                    <th>Business</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody id="appointments-table-body">
+                                <!-- Will be populated via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Book Appointment Section -->
+            <div id="book-section" class="section">
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">Book a New Appointment</h1>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Step 1: Select a Service</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="services-container">
+                            <!-- Services will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="date-time-card" class="card shadow mb-4" style="display: none;">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Step 2: Choose Date & Time</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="appointment-date" class="form-label">Date</label>
+                                <input type="date" id="appointment-date" class="form-control" min="">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="appointment-time" class="form-label">Time</label>
+                                <select id="appointment-time" class="form-select">
+                                    <option value="">Select a date first</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="staff-select" class="form-label">Preferred Staff (Optional)</label>
+                                <select id="staff-select" class="form-select">
+                                    <option value="">Any Available</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="appointment-notes" class="form-label">Notes (Optional)</label>
+                                <textarea id="appointment-notes" class="form-control" rows="3" placeholder="Any special requests or information"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="payment-card" class="card shadow mb-4" style="display: none;">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Step 3: Payment Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="card-name" class="form-label">Name on Card</label>
+                                <input type="text" id="card-name" class="form-control" placeholder="John Doe">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="card-number" class="form-label">Card Number</label>
+                                <input type="text" id="card-number" class="form-control" placeholder="XXXX XXXX XXXX XXXX">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="card-expiry" class="form-label">Expiration Date</label>
+                                <input type="text" id="card-expiry" class="form-control" placeholder="MM/YY">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="card-cvv" class="form-label">CVV</label>
+                                <input type="text" id="card-cvv" class="form-control" placeholder="123">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="card-zip" class="form-label">Zip Code</label>
+                                <input type="text" id="card-zip" class="form-control" placeholder="12345">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="review-card" class="card shadow mb-4" style="display: none;">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Step 4: Review & Confirm</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Appointment Details</h5>
+                                <table class="table">
+                                    <tr>
+                                        <th>Service:</th>
+                                        <td id="review-service">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Date:</th>
+                                        <td id="review-date">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Time:</th>
+                                        <td id="review-time">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Duration:</th>
+                                        <td id="review-duration">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Staff:</th>
+                                        <td id="review-staff">-</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Payment Details</h5>
+                                <table class="table">
+                                    <tr>
+                                        <th>Service Fee:</th>
+                                        <td id="review-fee">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tax:</th>
+                                        <td id="review-tax">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total:</th>
+                                        <td id="review-total">-</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Payment Method:</th>
+                                        <td id="review-payment">-</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="terms-check">
+                                    <label class="form-check-label" for="terms-check">
+                                        I agree to the cancellation policy and terms of service
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mb-4">
+                    <button id="prev-step" class="btn btn-secondary" style="display: none;">Previous Step</button>
+                    <button id="next-step" class="btn btn-primary">Next Step</button>
+                    <button id="confirm-booking" class="btn btn-success" style="display: none;">Confirm Booking</button>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="section">
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">Personal Profile</h1>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Profile Picture</h6>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <div class="user-avatar mx-auto" style="width: 150px; height: 150px; font-size: 3rem;">JD</div>
+                                </div>
+                                <button class="btn btn-primary btn-sm">Change Picture</button>
+                            </div>
+                        </div>
+
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Account Information</h6>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Member Since:</strong> <span id="member-since">April 2024</span></p>
+                                <p><strong>Last Login:</strong> <span id="last-login">Today at 10:30 AM</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Personal Information</h6>
+                            </div>
+                            <div class="card-body">
+                                <form id="profile-form">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="first-name" class="form-label">First Name</label>
+                                            <input type="text" class="form-control" id="first-name" value="John">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="last-name" class="form-label">Last Name</label>
+                                            <input type="text" class="form-control" id="last-name" value="Doe">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="email" value="john.doe@email.com">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="phone" class="form-label">Phone</label>
+                                            <input type="tel" class="form-control" id="phone" value="(555) 123-4567">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="dob" class="form-label">Date of Birth</label>
+                                            <input type="date" class="form-control" id="dob" value="1990-01-15">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="preferred-staff" class="form-label">Preferred Staff (Optional)</label>
+                                            <select class="form-select" id="preferred-staff">
+                                                <option value="">No Preference</option>
+                                                <!-- Will be populated via JavaScript -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="notes" class="form-label">Special Notes / Preferences</label>
+                                        <textarea class="form-control" id="notes" rows="3"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Change Password</h6>
+                            </div>
+                            <div class="card-body">
+                                <form id="password-form">
+                                    <div class="mb-3">
+                                        <label for="current-password" class="form-label">Current Password</label>
+                                        <input type="password" class="form-control" id="current-password">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="new-password" class="form-label">New Password</label>
+                                            <input type="password" class="form-control" id="new-password">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="confirm-password" class="form-label">Confirm New Password</label>
+                                            <input type="password" class="form-control" id="confirm-password">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Update Password</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center">
+            <div class="container">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright &copy; Appointment Scheduler 2024</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Constants and Data Storage
+    const API_BASE_URL = 'https://appointment-scheduler-backend-smss.onrender.com';
+    const CLIENT_ID = 1; // Assuming John Doe has ID 1 for this example
+
+    // Data Storage
+    let clientData = null;
+    let appointmentsData = [];
+    let servicesData = [];
+    let businessesData = [];
+    let selectedService = null;
+    let selectedDate = null;
+    let selectedTime = null;
+    let selectedStaff = null;
+    let currentStep = 1;
+
+    // DOM Elements
+    const sections = {
+        dashboard: document.getElementById('dashboard-section'),
+        appointments: document.getElementById('appointments-section'),
+        book: document.getElementById('book-section'),
+        profile: document.getElementById('profile-section')
+    };
+
+    const navLinks = {
+        dashboard: document.getElementById('nav-dashboard'),
+        appointments: document.getElementById('nav-appointments'),
+        book: document.getElementById('nav-book'),
+        profile: document.getElementById('nav-profile')
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        setupEventListeners();
+        loadAllData();
+    });
+
+    // Event Listeners Setup
+    function setupEventListeners() {
+        // Navigation
+        for (const key in navLinks) {
+            navLinks[key].addEventListener('click', (e) => {
+                e.preventDefault();
+                activateSection(key);
+            });
+        }
+
+        // Dashboard actions
+        document.getElementById('new-appointment-btn').addEventListener('click', () => {
+            activateSection('book');
+        });
+
+        document.getElementById('book-new-btn').addEventListener('click', () => {
+            activateSection('book');
+        });
+
+        document.getElementById('dropdown-profile').addEventListener('click', (e) => {
+            e.preventDefault();
+            activateSection('profile');
+        });
+
+        // Booking flow
+        document.getElementById('next-step').addEventListener('click', nextBookingStep);
+        document.getElementById('prev-step').addEventListener('click', prevBookingStep);
+        document.getElementById('confirm-booking').addEventListener('click', confirmBooking);
+
+        // Profile forms
+        document.getElementById('profile-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            updateProfile();
+        });
+
+        document.getElementById('password-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            updatePassword();
+        });
+
+        // Filter actions
+        document.getElementById('apply-filter').addEventListener('click', applyFilters);
+        document.getElementById('reset-filter').addEventListener('click', resetFilters);
+    }
+
+    // Navigation Functions
+    function activateSection(sectionKey) {
+        // Deactivate all sections
+        for (const key in sections) {
+            sections[key].classList.remove('active');
+            if (navLinks[key]) {
+                navLinks[key].classList.remove('active');
+            }
+        }
+
+        // Activate the selected section
+        sections[sectionKey].classList.add('active');
+        if (navLinks[sectionKey]) {
+            navLinks[sectionKey].classList.add('active');
+        }
+
+        // Reset booking flow if navigating to book section
+        if (sectionKey === 'book') {
+            resetBookingFlow();
+        }
+    }
+
+    // Data Loading Functions
+    async function loadAllData() {
+        try {
+            const [clientsResponse, appointmentsResponse, servicesResponse, businessesResponse] = await Promise.all([
+                fetch(`${API_BASE_URL}/clients`),
+                fetch(`${API_BASE_URL}/appointments`),
+                fetch(`${API_BASE_URL}/services`),
+                fetch(`${API_BASE_URL}/businesses/`)
+            ]);
+
+            const clients = await clientsResponse.json();
+            appointmentsData = await appointmentsResponse.json();
+            servicesData = await servicesResponse.json();
+            businessesData = await businessesResponse.json();
+
+            // Find John Doe's data (in a real app, this would be the logged-in user)
+            clientData = clients.find(client =>
+                client.first_name === 'John' && client.last_name === 'Doe') || clients[0];
+
+            // Filter appointments for this client
+            appointmentsData = appointmentsData.filter(app => app.client_id === clientData.id);
+
+            // Update UI
+            updateDashboard();
+            populateAppointmentsTable();
+            populateServicesForBooking();
+            populateProfileData();
+
+        } catch (error) {
+            console.error('Error loading data:', error);
+            alert('Failed to load data. Please try again later.');
+        }
+    }
+
+    // Dashboard Functions
+    function updateDashboard() {
+        const now = new Date();
+
+        // Filter appointments
+        const upcomingAppointments = appointmentsData.filter(app => {
+            const appDate = new Date(app.start_time);
+            return appDate > now && app.status !== 'canceled';
+        });
+
+        // Update stats
+        document.getElementById('upcoming-count').textContent = upcomingAppointments.length;
+        document.getElementById('total-count').textContent = appointmentsData.length;
+
+        // Next appointment
+        if (upcomingAppointments.length > 0) {
+            // Sort by date
+            upcomingAppointments.sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+            const nextApp = upcomingAppointments[0];
+            const nextDate = new Date(nextApp.start_time);
+
+            document.getElementById('next-appointment').textContent =
+                nextDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        // Find favorite business
+        const businessCounts = {};
+        appointmentsData.forEach(app => {
+            if (businessCounts[app.business_id]) {
+                businessCounts[app.business_id]++;
+            } else {
+                businessCounts[app.business_id] = 1;
+            }
+        });
+
+        let maxCount = 0;
+        let favBusinessId = null;
+
+        for (const [businessId, count] of Object.entries(businessCounts)) {
+            if (count > maxCount) {
+                maxCount = count;
+                favBusinessId = parseInt(businessId);
+            }
+        }
+
+        if (favBusinessId) {
+            const favBusiness = businessesData.find(b => b.id === favBusinessId);
+            document.getElementById('fav-business').textContent = favBusiness ? favBusiness.name : '-';
+        }
+
+        // Populate upcoming appointments cards
+        const upcomingContainer = document.getElementById('upcoming-appointments-list');
+        upcomingContainer.innerHTML = '';
+
+        if (upcomingAppointments.length === 0) {
+            upcomingContainer.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No upcoming appointments. Why not book one now?</p>
+                    <button class="btn btn-primary" id="dashboard-book-btn">Book Appointment</button>
+                </div>
+            `;
+
+            document.getElementById('dashboard-book-btn').addEventListener('click', () => {
+                activateSection('book');
+            });
+            return;
+        }
+
+        // Only show the next 3 upcoming appointments
+        const nextThreeAppointments = upcomingAppointments.slice(0, 3);
+
+        nextThreeAppointments.forEach(app => {
+            const service = servicesData.find(s => s.id === app.service_id);
+            const business = businessesData.find(b => b.id === app.business_id);
+
+            const appDate = new Date(app.start_time);
+            const formattedDate = appDate.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
+            });
+
+            const formattedTime = appDate.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const cardHtml = `
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card appointment-card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="m-0">${formattedDate} - ${formattedTime}</h6>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">${service ? service.name : 'Unknown Service'}</h5>
+                            <p class="card-text">
+                                <strong>Business:</strong> ${business ? business.name : 'Unknown'}<br>
+                                <strong>Duration:</strong> ${service ? service.duration : '0'} minutes<br>
+                                <strong>Status:</strong> <span class="badge bg-success">${app.status}</span>
+                            </p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <button class="btn btn-outline-primary btn-sm view-app-btn" data-id="${app.id}">View Details</button>
+                            <button class="btn btn-outline-danger btn-sm cancel-app-btn" data-id="${app.id}">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            upcomingContainer.innerHTML += cardHtml;
+        });
+
+        // Add event listeners to the buttons
+        document.querySelectorAll('.view-app-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // View appointment details
+                const appId = btn.getAttribute('data-id');
+                viewAppointmentDetails(appId);
+            });
+        });
+
+        document.querySelectorAll('.cancel-app-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Cancel appointment
+                const appId = btn.getAttribute('data-id');
+                cancelAppointment(appId);
+            });
+        });
+    }
+
+    // Appointments Functions
+    function populateAppointmentsTable() {
+        const tableBody = document.getElementById('appointments-table-body');
+        tableBody.innerHTML = '';
+
+        // Sort by date descending
+        appointmentsData.sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
+
+        appointmentsData.forEach(app => {
+            const service = servicesData.find(s => s.id === app.service_id);
+            const business = businessesData.find(b => b.id === app.business_id);
+
+            const appDate = new Date(app.start_time);
+            const formattedDate = appDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+
+            const formattedTime = appDate.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // Determine the badge class based on status
+            let statusClass = 'bg-secondary';
+            switch (app.status) {
+                case 'confirmed':
+                    statusClass = 'bg-primary';
+                    break;
+                case 'completed':
+                    statusClass = 'bg-success';
+                    break;
+                case 'canceled':
+                    statusClass = 'bg-danger';
+                    break;
+                case 'no-show':
+                    statusClass = 'bg-warning';
+                    break;
+            }
+
+            // Create the row
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${formattedDate}</td>
+                <td>${formattedTime}</td>
+                <td>${service ? service.name : 'Unknown Service'}</td>
+                <td>Staff #${app.staff_id}</td>
+                <td>${business ? business.name : 'Unknown Business'}</td>
+                <td><span class="badge ${statusClass}">${app.status}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-info view-details-btn" data-id="${app.id}">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    ${app.status === 'confirmed' ? `
+                        <button class="btn btn-sm btn-warning reschedule-btn" data-id="${app.id}">
+                            <i class="fas fa-clock"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger cancel-btn" data-id="${app.id}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    ` : ''}
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+        });
+
+        // Add event listeners to buttons
+        document.querySelectorAll('.view-details-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const appId = btn.getAttribute('data-id');
+                viewAppointmentDetails(appId);
+            });
+        });
+
+        document.querySelectorAll('.reschedule-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const appId = btn.getAttribute('data-id');
+                rescheduleAppointment(appId);
+            });
+        });
+
+        document.querySelectorAll('.cancel-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const appId = btn.getAttribute('data-id');
+                cancelAppointment(appId);
+            });
+        });
+
+        // Populate service filter dropdown
+        const serviceFilter = document.getElementById('service-filter');
+        serviceFilter.innerHTML = '<option value="all">All</option>';
+
+        const uniqueServices = new Set();
+        appointmentsData.forEach(app => {
+            const service = servicesData.find(s => s.id === app.service_id);
+            if (service && !uniqueServices.has(service.id)) {
+                uniqueServices.add(service.id);
+                const option = document.createElement('option');
+                option.value = service.id;
+                option.textContent = service.name;
+                serviceFilter.appendChild(option);
+            }
+        });
+    }
+
+    function applyFilters() {
+        const statusFilter = document.getElementById('status-filter').value;
+        const serviceFilter = document.getElementById('service-filter').value;
+        const dateFromFilter = document.getElementById('date-from').value;
+        const dateToFilter = document.getElementById('date-to').value;
+
+        const rows = document.querySelectorAll('#appointmentsTable tbody tr');
+
+        rows.forEach(row => {
+            let show = true;
+
+            // Status filter
+            if (statusFilter !== 'all') {
+                const statusCell = row.querySelector('td:nth-child(6)');
+                const status = statusCell.textContent.trim().toLowerCase();
+                if (status !== statusFilter) {
+                    show = false;
+                }
+            }
+
+            // Service filter
+            if (serviceFilter !== 'all') {
+                const serviceCell = row.querySelector('td:nth-child(3)');
+                const serviceName = serviceCell.textContent.trim();
+                const service = servicesData.find(s => s.name === serviceName);
+                if (!service || service.id !== parseInt(serviceFilter)) {
+                    show = false;
+                }
+            }
+
+            // Date from filter
+            if (dateFromFilter) {
+                const dateCell = row.querySelector('td:nth-child(1)');
+                const dateValue = new Date(dateCell.textContent);
+                const fromDate = new Date(dateFromFilter);
+                if (dateValue < fromDate) {
+                    show = false;
+                }
+            }
+
+            // Date to filter
+            if (dateToFilter) {
+                const dateCell = row.querySelector('td:nth-child(1)');
+                const dateValue = new Date(dateCell.textContent);
+                const toDate = new Date(dateToFilter);
+                toDate.setHours(23, 59, 59);
+                if (dateValue > toDate) {
+                    show = false;
+                }
+            }
+
+            // Show or hide the row
+            row.style.display = show ? '' : 'none';
+        });
+    }
+
+    function resetFilters() {
+        document.getElementById('status-filter').value = 'all';
+        document.getElementById('service-filter').value = 'all';
+        document.getElementById('date-from').value = '';
+        document.getElementById('date-to').value = '';
+
+        const rows = document.querySelectorAll('#appointmentsTable tbody tr');
+        rows.forEach(row => {
+            row.style.display = '';
+        });
+    }
+
+    // Appointment Actions
+    function viewAppointmentDetails(appId) {
+        const appointment = appointmentsData.find(app => app.id === parseInt(appId));
+        if (!appointment) return;
+
+        const service = servicesData.find(s => s.id === appointment.service_id);
+        const business = businessesData.find(b => b.id === appointment.business_id);
+
+        const appDate = new Date(appointment.start_time);
+        const endDate = new Date(appointment.end_time);
+        const duration = (endDate - appDate) / (1000 * 60); // in minutes
+
+        const modalHtml = `
+        <div class="modal fade" id="appointmentDetailsModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Appointment Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Appointment Information</h5>
+                                <table class="table">
+                                    <tr>
+                                        <th>Service:</th>
+                                        <td>${service ? service.name : 'Unknown'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Date:</th>
+                                        <td>${appDate.toLocaleDateString()}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Time:</th>
+                                        <td>${appDate.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Duration:</th>
+                                        <td>${duration} minutes</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status:</th>
+                                        <td><span class="badge bg-${appointment.status === 'confirmed' ? 'primary' :
+            appointment.status === 'completed' ? 'success' :
+                appointment.status === 'canceled' ? 'danger' : 'warning'}">${appointment.status}</span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Business Information</h5>
+                                <table class="table">
+                                    <tr>
+                                        <th>Name:</th>
+                                        <td>${business ? business.name : 'Unknown'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address:</th>
+                                        <td>${business ? business.address : 'Unknown'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phone:</th>
+                                        <td>${business ? business.phone : 'Unknown'}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email:</th>
+                                        <td>${business ? business.email : 'Unknown'}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h5>Notes</h5>
+                                <p>${appointment.notes || 'No notes'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        ${appointment.status === 'confirmed' ? `
+                            <button type="button" class="btn btn-warning" id="modal-reschedule-btn">Reschedule</button>
+                            <button type="button" class="btn btn-danger" id="modal-cancel-btn">Cancel Appointment</button>
+                        ` : ''}
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+
+        // Append modal to body
+        const modalContainer = document.createElement('div');
+        modalContainer.innerHTML = modalHtml;
+        document.body.appendChild(modalContainer);
+
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('appointmentDetailsModal'));
+        modal.show();
+
+        // Add event listeners
+        if (appointment.status === 'confirmed') {
+            document.getElementById('modal-reschedule-btn').addEventListener('click', () => {
+                modal.hide();
+                rescheduleAppointment(appId);
+            });
+
+            document.getElementById('modal-cancel-btn').addEventListener('click', () => {
+                modal.hide();
+                cancelAppointment(appId);
+            });
+        }
+
+        // Clean up the modal after it's hidden
+        document.getElementById('appointmentDetailsModal').addEventListener('hidden.bs.modal', function () {
+            document.body.removeChild(modalContainer);
+        });
+    }
+
+    function rescheduleAppointment(appId) {
+        // In a real application, this would navigate to a reschedule flow
+        // For this example, we'll show an alert
+        alert(`Reschedule functionality would be implemented here for appointment #${appId}`);
+
+        // Alternative implementation would be to pre-populate the booking form with current appointment data
+        // And then navigate to the booking section
+    }
+
+    function cancelAppointment(appId) {
+        if (confirm('Are you sure you want to cancel this appointment? Cancellation policies may apply.')) {
+            // In a real application, this would make an API call to cancel
+            // For this example, we'll update the local data
+            const appointmentIndex = appointmentsData.findIndex(app => app.id === parseInt(appId));
+
+            if (appointmentIndex !== -1) {
+                appointmentsData[appointmentIndex].status = 'canceled';
+                alert('Appointment has been canceled successfully.');
+
+                // Refresh UI
+                updateDashboard();
+                populateAppointmentsTable();
+            }
+        }
+    }
+
+    // Booking Functions
+    function populateServicesForBooking() {
+        const servicesContainer = document.getElementById('services-container');
+        servicesContainer.innerHTML = '';
+
+        // Group services by business for better organization
+        const businessServices = {};
+
+        servicesData.forEach(service => {
+            if (!service.is_active) return;
+
+            if (!businessServices[service.business_id]) {
+                businessServices[service.business_id] = [];
+            }
+
+            businessServices[service.business_id].push(service);
+        });
+
+        // Create business sections
+        for (const [businessId, services] of Object.entries(businessServices)) {
+            const business = businessesData.find(b => b.id === parseInt(businessId));
+            if (!business) continue;
+
+            // Business header
+            const businessHeader = document.createElement('div');
+            businessHeader.className = 'col-12 mt-4 mb-3';
+            businessHeader.innerHTML = `
+                <h4>${business.name}</h4>
+                <p class="text-muted">${business.address}</p>
+            `;
+            servicesContainer.appendChild(businessHeader);
+
+            // Services cards
+            services.forEach(service => {
+                const serviceCol = document.createElement('div');
+                serviceCol.className = 'col-lg-4 col-md-6 mb-4';
+                serviceCol.innerHTML = `
+                    <div class="card service-card" data-service-id="${service.id}">
+                        <div class="card-body">
+                            <h5 class="card-title">${service.name}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">${service.duration} min | $${service.price.toFixed(2)}</h6>
+                            <p class="card-text">${service.description}</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <button class="btn btn-outline-primary w-100 select-service-btn">Select</button>
+                        </div>
+                    </div>
+                `;
+                servicesContainer.appendChild(serviceCol);
+
+                // Add click event to the card
+                const card = serviceCol.querySelector('.service-card');
+                card.addEventListener('click', () => {
+                    selectService(service);
+                });
+
+                // Add click event to the button
+                serviceCol.querySelector('.select-service-btn').addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent the card click event from firing
+                    selectService(service);
+                });
+            });
+        }
+    }
+
+    function selectService(service) {
+        // Deselect all services
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+
+        // Select the clicked service
+        document.querySelector(`.service-card[data-service-id="${service.id}"]`).classList.add('selected');
+
+        // Store the selected service
+        selectedService = service;
+
+        // Update UI for the next step
+        document.getElementById('date-time-card').style.display = 'block';
+
+        // Set min date to today
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        document.getElementById('appointment-date').min = formattedDate;
+
+        // Auto-scroll to the date selection
+        document.getElementById('date-time-card').scrollIntoView({
+            behavior: 'smooth'
+        });
+    }
+
+    function nextBookingStep() {
+        // Validate current step
+        if (currentStep === 1) {
+            if (!selectedService) {
+                alert('Please select a service to continue.');
+                return;
+            }
+
+            if (!document.getElementById('appointment-date').value || !document.getElementById('appointment-time').value) {
+                alert('Please select a date and time to continue.');
+                return;
+            }
+
+            // Store selected date and time
+            selectedDate = document.getElementById('appointment-date').value;
+            selectedTime = document.getElementById('appointment-time').value;
+
+            // Show payment step
+            document.getElementById('payment-card').style.display = 'block';
+            document.getElementById('prev-step').style.display = 'block';
+
+            // Auto-scroll to payment section
+            document.getElementById('payment-card').scrollIntoView({
+                behavior: 'smooth'
+            });
+
+            currentStep = 2;
+
+        } else if (currentStep === 2) {
+            // Validate payment information
+            const cardName = document.getElementById('card-name').value;
+            const cardNumber = document.getElementById('card-number').value;
+            const cardExpiry = document.getElementById('card-expiry').value;
+            const cardCVV = document.getElementById('card-cvv').value;
+
+            if (!cardName || !cardNumber || !cardExpiry || !cardCVV) {
+                alert('Please complete all payment fields to continue.');
+                return;
+            }
+
+            // Show review step
+            document.getElementById('review-card').style.display = 'block';
+            document.getElementById('next-step').style.display = 'none';
+            document.getElementById('confirm-booking').style.display = 'block';
+
+            // Update review information
+            updateReviewInfo();
+
+            // Auto-scroll to review section
+            document.getElementById('review-card').scrollIntoView({
+                behavior: 'smooth'
+            });
+
+            currentStep = 3;
+        }
+    }
+
+    function prevBookingStep() {
+        if (currentStep === 2) {
+            // Go back to service selection
+            document.getElementById('payment-card').style.display = 'none';
+            document.getElementById('prev-step').style.display = 'none';
+
+            // Auto-scroll to date selection
+            document.getElementById('date-time-card').scrollIntoView({
+                behavior: 'smooth'
+            });
+
+            currentStep = 1;
+
+        } else if (currentStep === 3) {
+            // Go back to payment
+            document.getElementById('review-card').style.display = 'none';
+            document.getElementById('next-step').style.display = 'block';
+            document.getElementById('confirm-booking').style.display = 'none';
+
+            // Auto-scroll to payment section
+            document.getElementById('payment-card').scrollIntoView({
+                behavior: 'smooth'
+            });
+
+            currentStep = 2;
+        }
+    }
+
+    function updateReviewInfo() {
+        document.getElementById('review-service').textContent = selectedService.name;
+        document.getElementById('review-date').textContent = new Date(selectedDate).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        document.getElementById('review-time').textContent = selectedTime;
+        document.getElementById('review-duration').textContent = `${selectedService.duration} minutes`;
+
+        // Staff info
+        const staffSelect = document.getElementById('staff-select');
+        const selectedStaffId = staffSelect.value;
+        document.getElementById('review-staff').textContent = selectedStaffId ? `Staff #${selectedStaffId}` : 'Any Available';
+
+        // Payment info
+        document.getElementById('review-fee').textContent = `$${selectedService.price.toFixed(2)}`;
+
+        const tax = selectedService.price * 0.08; // Assuming 8% tax
+        document.getElementById('review-tax').textContent = `$${tax.toFixed(2)}`;
+
+        const total = selectedService.price + tax;
+        document.getElementById('review-total').textContent = `$${total.toFixed(2)}`;
+
+        const cardNumber = document.getElementById('card-number').value;
+        const lastFour = cardNumber.slice(-4);
+        document.getElementById('review-payment').textContent = `Credit Card ending in ${lastFour}`;
+    }
+
+    function confirmBooking() {
+        const termsChecked = document.getElementById('terms-check').checked;
+
+        if (!termsChecked) {
+            alert('Please agree to the terms and conditions to complete your booking.');
+            return;
+        }
+
+        // In a real application, this would make an API call to create the appointment
+        // For this example, we'll simulate success
+
+        // Create a success modal
+        const modalHtml = `
+        <div class="modal fade" id="bookingSuccessModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title">Booking Confirmed!</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                            <h4 class="mt-3">Your appointment has been booked successfully</h4>
+                        </div>
+                        <p>We've sent a confirmation email with all the details to your registered email address. You can also view this appointment in your appointments section.</p>
+                        <table class="table table-bordered mt-3">
+                            <tr>
+                                <th>Service:</th>
+                                <td>${selectedService.name}</td>
+                            </tr>
+                            <tr>
+                                <th>Date & Time:</th>
+                                <td>${new Date(selectedDate + 'T' + selectedTime).toLocaleString()}</td>
+                            </tr>
+                            <tr>
+                                <th>Duration:</th>
+                                <td>${selectedService.duration} minutes</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="goto-dashboard-btn">Go to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+
+        // Append modal to body
+        const modalContainer = document.createElement('div');
+        modalContainer.innerHTML = modalHtml;
+        document.body.appendChild(modalContainer);
+
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('bookingSuccessModal'));
+        modal.show();
+
+        // Add event listener for the go to dashboard button
+        document.getElementById('goto-dashboard-btn').addEventListener('click', () => {
+            modal.hide();
+            resetBookingFlow();
+            activateSection('dashboard');
+
+            // Simulate adding the new appointment to the data
+            const now = new Date();
+            const appStartTime = new Date(selectedDate + 'T' + selectedTime);
+            const appEndTime = new Date(appStartTime.getTime() + selectedService.duration * 60000);
+
+            const newAppointment = {
+                id: appointmentsData.length + 1, // Simple ID generation for the example
+                business_id: selectedService.business_id,
+                client_id: clientData.id,
+                service_id: selectedService.id,
+                staff_id: document.getElementById('staff-select').value || 1,
+                start_time: appStartTime.toISOString(),
+                end_time: appEndTime.toISOString(),
+                status: 'confirmed',
+                notes: document.getElementById('appointment-notes').value || '',
+                created_at: now.toISOString(),
+                updated_at: now.toISOString()
+            };
+
+            appointmentsData.push(newAppointment);
+
+            // Update UI
+            updateDashboard();
+            populateAppointmentsTable();
+        });
+
+        // Clean up the modal after it's hidden
+        document.getElementById('bookingSuccessModal').addEventListener('hidden.bs.modal', function () {
+            document.body.removeChild(modalContainer);
+        });
+    }
+
+    function resetBookingFlow() {
+        selectedService = null;
+        selectedDate = null;
+        selectedTime = null;
+        selectedStaff = null;
+        currentStep = 1;
+
+        // Reset UI
+        document.querySelectorAll('.service-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+
+        document.getElementById('date-time-card').style.display = 'none';
+        document.getElementById('payment-card').style.display = 'none';
+        document.getElementById('review-card').style.display = 'none';
+        document.getElementById('prev-step').style.display = 'none';
+        document.getElementById('next-step').style.display = 'block';
+        document.getElementById('confirm-booking').style.display = 'none';
+
+        // Reset form fields
+        document.getElementById('appointment-date').value = '';
+        document.getElementById('appointment-time').value = '';
+        document.getElementById('staff-select').value = '';
+        document.getElementById('appointment-notes').value = '';
+        document.getElementById('card-name').value = '';
+        document.getElementById('card-number').value = '';
+        document.getElementById('card-expiry').value = '';
+        document.getElementById('card-cvv').value = '';
+        document.getElementById('card-zip').value = '';
+        document.getElementById('terms-check').checked = false;
+    }
+
+    // Profile Functions
+    function populateProfileData() {
+        if (!clientData) return;
+
+        // Populate form fields
+        document.getElementById('first-name').value = clientData.first_name;
+        document.getElementById('last-name').value = clientData.last_name;
+        document.getElementById('email').value = clientData.email;
+        document.getElementById('phone').value = clientData.phone;
+        document.getElementById('dob').value = clientData.date_of_birth;
+        document.getElementById('notes').value = clientData.notes || '';
+
+        // Member since
+        const createdDate = new Date(clientData.created_at);
+        document.getElementById('member-since').textContent = createdDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long'
+        });
+
+        // Populate staff dropdown
+        // In a real application, this would fetch staff data from an API
+        // For this example, we'll add some placeholder values
+        const staffSelect = document.getElementById('preferred-staff');
+        staffSelect.innerHTML = '<option value="">No Preference</option>';
+
+        for (let i = 1; i <= 5; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = `Staff Member #${i}`;
+            option.selected = i === clientData.preferred_staff_id;
+            staffSelect.appendChild(option);
+        }
+    }
+
+    function updateProfile() {
+        // In a real application, this would make an API call to update the profile
+        // For this example, we'll update the local data
+
+        clientData.first_name = document.getElementById('first-name').value;
+        clientData.last_name = document.getElementById('last-name').value;
+        clientData.email = document.getElementById('email').value;
+        clientData.phone = document.getElementById('phone').value;
+        clientData.date_of_birth = document.getElementById('dob').value;
+        clientData.notes = document.getElementById('notes').value;
+        clientData.preferred_staff_id = document.getElementById('preferred-staff').value || null;
+
+        alert('Profile updated successfully!');
+    }
+
+    function updatePassword() {
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            alert('Please fill in all password fields.');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            alert('New passwords do not match.');
+            return;
+        }
+
+        // In a real application, this would make an API call to update the password
+        // For this example, we'll simulate success
+        alert('Password updated successfully!');
+
+        // Clear the form
+        document.getElementById('current-password').value = '';
+        document.getElementById('new-password').value = '';
+        document.getElementById('confirm-password').value = '';
+    }
+
+    // Helper for appointment date/time selection
+    document.getElementById('appointment-date').addEventListener('change', function() {
+        const selectedDate = this.value;
+        if (!selectedDate || !selectedService) return;
+
+        // In a real app, this would fetch available times from an API
+        // For this example, we'll generate some sample times
+        const timeSelect = document.getElementById('appointment-time');
+        timeSelect.innerHTML = '';
+
+        // Generate times from 9 AM to 5 PM
+        const startHour = 9;
+        const endHour = 17;
+        const interval = 30; // 30-minute intervals
+
+        for (let hour = startHour; hour < endHour; hour++) {
+            for (let minute = 0; minute < 60; minute += interval) {
+                const formattedHour = hour.toString().padStart(2, '0');
+                const formattedMinute = minute.toString().padStart(2, '0');
+                const timeValue = `${formattedHour}:${formattedMinute}`;
+
+                const option = document.createElement('option');
+                option.value = timeValue;
+
+                // Format for display (12-hour clock)
+                const displayHour = hour > 12 ? hour - 12 : hour;
+                const amPm = hour >= 12 ? 'PM' : 'AM';
+                option.textContent = `${displayHour}:${formattedMinute} ${amPm}`;
+
+                timeSelect.appendChild(option);
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
