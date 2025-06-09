@@ -455,8 +455,70 @@ the response for api call is coming back in JSON format as the following:
 "
 Do NOT output the code in notebook.
 
-     
 
 
+## Search bar to allow searching or filtering services/providers:
 
+I want to make a search bar that allow visitor to search or filter database services and providers. 
+I want this page to fetch the database for match either by service name or provider name and 
+return service information and display them to the user.
+allow client to book the service after adding it to the cert.
+- The search result page must integrate header and footer of the index.html page.
+- Allow user to search by service categories
+- Services data can be found using this URL/Endpoint:https://appointment-scheduler-backend-smss.onrender.com/services
+The response is coming back in JSON format as the following:
 
+"[
+    {
+        "id": 1,
+        "business_id": 1,
+        "category_id": 1,
+        "name": "Swedish Massage",
+        "description": "60-minute full body massage using gentle pressure and long strokes to promote relaxation.",
+        "duration": 60,
+        "buffer_time": 15,
+        "max_clients": 1,
+        "price": 85.0,
+        "is_active": true,
+        "created_at": "2025-04-28T18:11:58.027757Z",
+        "updated_at": "2025-04-28T18:11:58.027757Z"
+    },
+...
+]
+"
+- Business data can be found using this url/API endpoint: https://appointment-scheduler-backend-smss.onrender.com/businesses
+The response is coming back in JSON format as the following:
+
+"
+[
+    {
+        "id": 3,
+        "name": "Serene Dental Care",
+        "address": "789 Healthcare Blvd, Miami, FL 33130",
+        "phone": "(305) 555-9876",
+        "email": "reception@serenedental.com",
+        "website": "www.serenedental.com",
+        "timezone": "America/New_York",
+        "cancellation_policy": "A 48-hour notice is required for cancellation. Late cancellations may incur a $50 fee.",
+        "created_at": "2025-04-28T18:11:28.857151Z",
+        "updated_at": "2025-04-28T18:11:28.857151Z"
+    },
+...
+]
+"
+
+- Service categories can be found using the following URL/endpoint API:https://appointment-scheduler-backend-smss.onrender.com/service-categories
+- The response to the above call is coming back in JSON format as the following:
+"
+[
+    {
+        "id": 1,
+        "business_id": 1,
+        "name": "Massage Therapy",
+        "description": "Relax and rejuvenate with our range of massage treatments designed to reduce stress and tension.",
+        "created_at": "2025-04-28T18:11:49.990330Z",
+        "updated_at": "2025-04-28T18:11:49.990330Z"
+    },
+...
+]
+"

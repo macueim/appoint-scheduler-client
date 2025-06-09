@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - AppointScheduler</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="flex flex-col min-h-screen bg-gray-100 font-sans antialiased">
+
+<!-- Header copied from index.html -->
+<header class="bg-white shadow-lg py-4">
+    <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center mb-4 md:mb-0">
+            <img src="../../public/images/logo.png" alt="AppointScheduler Logo" class="mr-2 rounded-full shadow-sm" style="height:50px; width:50px;">
+            <span class="text-2xl font-extrabold text-gray-900">AppointScheduler</span>
+        </div>
+
+        <div class="w-full md:w-1/3 mb-4 md:mb-0 relative">
+            <form id="searchForm">
+                <input type="text" id="searchInput" placeholder="Search for services or providers..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+            </form>
+        </div>
+        <nav class="hidden md:flex space-x-2">
+            <a href="index.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Home</a>
+            <a href="../src/pages/about-us.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">About Us</a>
+            <a href="#" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Services</a>
+            <a href="#" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Your Cart</a>
+            <a href="../src/pages/login.html" class="text-blue-600 font-semibold py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Login/Sign Up</a>
+        </nav>
+
+        <div class="md:hidden" x-data="{ open: false }">
+            <button @click="open = !open" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+
+            <div x-show="open" @click.away="open = false" class="absolute top-44 right-4 bg-white shadow-lg rounded-md p-4 space-y-2 z-10 w-48 border border-gray-200">
+                <a href="index.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Home</a>
+                <a href="../src/pages/about-us.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">About Us</a>
+                <a href="#" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Services</a>
+                <a href="#" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Your Cart</a>
+                <a href="../src/pages/login.html" class="block text-blue-600 font-semibold py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm transition duration-300">Login/Sign Up</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow p-4 container mx-auto">
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">Search Results</h1>
+
+        <!-- Category Filter Section -->
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold mb-2">Filter by Category</h2>
+            <div id="categoryFilters" class="flex flex-wrap gap-2">
+                <!-- Categories will be loaded here via JavaScript -->
+                <div class="animate-pulse bg-gray-200 h-8 w-32 rounded-full"></div>
+                <div class="animate-pulse bg-gray-200 h-8 w-28 rounded-full"></div>
+                <div class="animate-pulse bg-gray-200 h-8 w-36 rounded-full"></div>
+            </div>
+        </div>
+
+        <!-- Search Results Section -->
+        <div id="searchResults" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Search results will be displayed here via JavaScript -->
+            <!-- Loading skeleton -->
+            <div class="animate-pulse bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                <div class="h-6 bg-gray-200 rounded mb-4 w-3/4"></div>
+                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                <div class="h-4 bg-gray-200 rounded mb-2 w-5/6"></div>
+                <div class="h-4 bg-gray-200 rounded mb-4 w-2/3"></div>
+                <div class="h-10 bg-gray-200 rounded w-full"></div>
+            </div>
+            <div class="animate-pulse bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                <div class="h-6 bg-gray-200 rounded mb-4 w-3/4"></div>
+                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                <div class="h-4 bg-gray-200 rounded mb-2 w-5/6"></div>
+                <div class="h-4 bg-gray-200 rounded mb-4 w-2/3"></div>
+                <div class="h-10 bg-gray-200 rounded w-full"></div>
+            </div>
+            <div class="animate-pulse bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                <div class="h-6 bg-gray-200 rounded mb-4 w-3/4"></div>
+                <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                <div class="h-4 bg-gray-200 rounded mb-2 w-5/6"></div>
+                <div class="h-4 bg-gray-200 rounded mb-4 w-2/3"></div>
+                <div class="h-10 bg-gray-200 rounded w-full"></div>
+            </div>
+        </div>
+
+        <!-- No Results Message (hidden by default) -->
+        <div id="noResults" class="hidden text-center py-12">
+            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">No results found</h3>
+            <p class="text-gray-500">Please try a different search term or filter</p>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Preview Section -->
+    <div id="cartPreview" class="hidden bg-white p-6 rounded-lg shadow-md mb-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-800">Your Cart</h2>
+            <button id="closeCart" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="cartItems" class="space-y-4">
+            <!-- Cart items will be displayed here -->
+        </div>
+        <div class="mt-6 flex justify-between border-t pt-4">
+            <span class="text-lg font-semibold">Total:</span>
+            <span id="cartTotal" class="text-lg font-bold">$0.00</span>
+        </div>
+        <button id="checkoutButton" class="mt-4 w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
+            Proceed to Checkout
+        </button>
+    </div>
+</main>
+
+<!-- Footer copied from index.html -->
+<footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center">
+        <p class="mb-4 text-gray-300">&copy; 2025 AppointScheduler. All rights reserved.</p>
+        <div class="flex justify-center space-x-7 mb-6">
+            <a href="https://facebook.com/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-500 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-facebook-f fa-2x"></i>
+            </a>
+            <a href="https://x.com/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-400 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-twitter fa-2x"></i>
+            </a>
+            <a href="https://linkedin.com/company/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-600 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-linkedin-in fa-2x"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-red-600 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-youtube fa-2x"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-pink-500 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-instagram fa-2x"></i>
+            </a>
+        </div>
+        <p class="text-sm">
+            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Privacy Policy</a> |
+            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Terms of Service</a> |
+            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Contact Us</a> |
+            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">FAQ</a>
+        </p>
+    </div>
+</footer>
+
+<script>
+    // Global data storage
+    const state = {
+        services: [],
+        businesses: [],
+        categories: [],
+        cart: [],
+        activeCategory: null,
+        searchQuery: ''
+    };
+
+    // DOM Elements
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const categoryFilters = document.getElementById('categoryFilters');
+    const noResults = document.getElementById('noResults');
+    const cartPreview = document.getElementById('cartPreview');
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    const closeCart = document.getElementById('closeCart');
+    const checkoutButton = document.getElementById('checkoutButton');
+
+    // Fetch initial data
+    async function fetchData() {
+        try {
+            // Fetch services
+            const servicesResponse = await fetch('https://appointment-scheduler-backend-smss.onrender.com/services');
+            state.services = await servicesResponse.json();
+
+            // Fetch businesses
+            const businessesResponse = await fetch('https://appointment-scheduler-backend-smss.onrender.com/businesses');
+            state.businesses = await businessesResponse.json();
+
+            // Fetch categories
+            const categoriesResponse = await fetch('https://appointment-scheduler-backend-smss.onrender.com/service-categories');
+            state.categories = await categoriesResponse.json();
+
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            state.searchQuery = urlParams.get('query') || '';
+            const categoryId = urlParams.get('category');
+
+            if (categoryId) {
+                state.activeCategory = parseInt(categoryId);
+            }
+
+            if (state.searchQuery) {
+                searchInput.value = state.searchQuery;
+            }
+
+            // Render everything
+            renderCategoryFilters();
+            renderSearchResults();
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            searchResults.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <p class="text-red-500 mb-2">Error loading data. Please try again later.</p>
+                        <button onclick="fetchData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                            Retry
+                        </button>
+                    </div>
+                `;
+        }
+    }
+
+    // Render category filter buttons
+    function renderCategoryFilters() {
+        categoryFilters.innerHTML = `
+                <button class="category-filter ${!state.activeCategory ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'} px-4 py-1 rounded-full hover:bg-blue-500 hover:text-white transition duration-300"
+                        data-category-id="all">
+                    All Categories
+                </button>
+            `;
+
+        state.categories.forEach(category => {
+            categoryFilters.innerHTML += `
+                    <button class="category-filter ${state.activeCategory === category.id ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'} px-4 py-1 rounded-full hover:bg-blue-500 hover:text-white transition duration-300"
+                            data-category-id="${category.id}">
+                        ${category.name}
+                    </button>
+                `;
+        });
+
+        // Add event listeners to category filters
+        document.querySelectorAll('.category-filter').forEach(button => {
+            button.addEventListener('click', () => {
+                const categoryId = button.getAttribute('data-category-id');
+
+                if (categoryId === 'all') {
+                    state.activeCategory = null;
+                } else {
+                    state.activeCategory = parseInt(categoryId);
+                }
+
+                // Update URL parameters
+                const url = new URL(window.location);
+                if (state.activeCategory) {
+                    url.searchParams.set('category', state.activeCategory);
+                } else {
+                    url.searchParams.delete('category');
+                }
+                window.history.pushState({}, '', url);
+
+                renderCategoryFilters(); // Re-render filters to update active state
+                renderSearchResults(); // Re-render results with new filter
+            });
+        });
+    }
+
+    // Render search results
+    function renderSearchResults() {
+        // Filter services based on search query and active category
+        let filteredServices = state.services;
+
+        if (state.searchQuery) {
+            const query = state.searchQuery.toLowerCase();
+            filteredServices = filteredServices.filter(service => {
+                // Find the business for this service
+                const business = state.businesses.find(b => b.id === service.business_id);
+
+                return (
+                    service.name.toLowerCase().includes(query) ||
+                    service.description.toLowerCase().includes(query) ||
+                    (business && business.name.toLowerCase().includes(query))
+                );
+            });
+        }
+
+        if (state.activeCategory) {
+            filteredServices = filteredServices.filter(service => service.category_id === state.activeCategory);
+        }
+
+        // Show no results message if needed
+        if (filteredServices.length === 0) {
+            searchResults.innerHTML = '';
+            noResults.classList.remove('hidden');
+            return;
+        } else {
+            noResults.classList.add('hidden');
+        }
+
+        // Render services
+        searchResults.innerHTML = '';
+        filteredServices.forEach(service => {
+            // Find the business for this service
+            const business = state.businesses.find(b => b.id === service.business_id);
+            // Find the category for this service
+            const category = state.categories.find(c => c.id === service.category_id);
+
+            const isInCart = state.cart.some(item => item.id === service.id);
+
+            searchResults.innerHTML += `
+                    <div class="bg-white p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition duration-300">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">${service.name}</h3>
+                        <p class="text-gray-600 mb-1">
+                            <i class="fas fa-building text-gray-400 mr-2"></i> ${business ? business.name : 'Unknown Provider'}
+                        </p>
+                        <p class="text-gray-600 mb-1">
+                            <i class="fas fa-tag text-gray-400 mr-2"></i> ${category ? category.name : 'Uncategorized'}
+                        </p>
+                        <p class="text-gray-600 mb-3">${service.description}</p>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-lg font-bold text-blue-600">$${service.price.toFixed(2)}</span>
+                            <span class="text-sm text-gray-500">${service.duration} min</span>
+                        </div>
+                        <button class="cart-button mt-4 w-full py-2 px-4 rounded-lg font-medium ${isInCart ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'} transition duration-300"
+                                data-service-id="${service.id}">
+                            ${isInCart ? 'Remove from Cart' : 'Add to Cart'}
+                        </button>
+                    </div>
+                `;
+        });
+
+        // Add event listeners to cart buttons
+        document.querySelectorAll('.cart-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const serviceId = parseInt(button.getAttribute('data-service-id'));
+                const service = state.services.find(s => s.id === serviceId);
+
+                // Check if already in cart
+                const cartIndex = state.cart.findIndex(item => item.id === serviceId);
+
+                if (cartIndex >= 0) {
+                    // Remove from cart
+                    state.cart.splice(cartIndex, 1);
+                    button.textContent = 'Add to Cart';
+                    button.classList.remove('bg-red-500', 'hover:bg-red-600');
+                    button.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                } else {
+                    // Add to cart
+                    state.cart.push(service);
+                    button.textContent = 'Remove from Cart';
+                    button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    button.classList.add('bg-red-500', 'hover:bg-red-600');
+
+                    // Show cart preview
+                    updateCartPreview();
+                    cartPreview.classList.remove('hidden');
+                }
+
+                // Save cart to localStorage
+                localStorage.setItem('appointSchedulerCart', JSON.stringify(state.cart));
+            });
+        });
+    }
+
+    // Update cart preview
+    function updateCartPreview() {
+        cartItems.innerHTML = '';
+
+        if (state.cart.length === 0) {
+            cartItems.innerHTML = '<p class="text-gray-500">Your cart is empty</p>';
+            cartTotal.textContent = '$0.00';
+            return;
+        }
+
+        let total = 0;
+
+        state.cart.forEach(service => {
+            const business = state.businesses.find(b => b.id === service.business_id);
+            total += service.price;
+
+            cartItems.innerHTML += `
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <div>
+                            <h4 class="font-semibold">${service.name}</h4>
+                            <p class="text-sm text-gray-600">${business ? business.name : 'Unknown Provider'}</p>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="font-semibold mr-3">$${service.price.toFixed(2)}</span>
+                            <button class="remove-cart-item text-red-500 hover:text-red-700" data-service-id="${service.id}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+        });
+
+        cartTotal.textContent = `$${total.toFixed(2)}`;
+
+        // Add event listeners to remove buttons
+        document.querySelectorAll('.remove-cart-item').forEach(button => {
+            button.addEventListener('click', () => {
+                const serviceId = parseInt(button.getAttribute('data-service-id'));
+                const cartIndex = state.cart.findIndex(item => item.id === serviceId);
+
+                if (cartIndex >= 0) {
+                    state.cart.splice(cartIndex, 1);
+
+                    // Update UI
+                    updateCartPreview();
+                    renderSearchResults(); // Re-render to update buttons
+
+                    // Save cart to localStorage
+                    localStorage.setItem('appointSchedulerCart', JSON.stringify(state.cart));
+
+                    // Hide cart if empty
+                    if (state.cart.length === 0) {
+                        cartPreview.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+        // Load cart from localStorage
+        const savedCart = localStorage.getItem('appointSchedulerCart');
+        if (savedCart) {
+            state.cart = JSON.parse(savedCart);
+
+            // Show cart preview if not empty
+            if (state.cart.length > 0) {
+                updateCartPreview();
+                cartPreview.classList.remove('hidden');
+            }
+        }
+
+        // Initialize search form
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            state.searchQuery = searchInput.value.trim();
+
+            // Update URL parameters
+            const url = new URL(window.location);
+            if (state.searchQuery) {
+                url.searchParams.set('query', state.searchQuery);
+            } else {
+                url.searchParams.delete('query');
+            }
+            window.history.pushState({}, '', url);
+
+            renderSearchResults();
+        });
+
+        // Initialize close cart button
+        closeCart.addEventListener('click', () => {
+            cartPreview.classList.add('hidden');
+        });
+
+        // Initialize checkout button
+        checkoutButton.addEventListener('click', () => {
+            alert('Checkout functionality would be implemented here');
+            // Implement the checkout process as needed
+        });
+
+        // Fetch data
+        fetchData();
+    });
+</script>
+</body>
+</html>
