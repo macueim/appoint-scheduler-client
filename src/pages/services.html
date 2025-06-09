@@ -133,562 +133,469 @@
             </div>
         </div>
 
-        <!-- Service Categories -->
-        <template x-if="!loading && !error && filteredServices.length > 0">
-            <div class="space-y-8">
-                <!-- Group services by category -->
-                <template x-for="(categoryServices, categoryId) in groupedServices" :key="categoryId">
-                    <div class="border border-gray-200 rounded-lg overflow-hidden">
-                        <!-- Category Header -->
-                        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                            <h3 class="text-lg font-semibold text-gray-800" x-text="getCategoryName(categoryId)">Category Name</h3>
-                        </div>
-
-                        <!-- Services Table -->
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                <template x-for="service in categoryServices" :key="service.id">
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900" x-text="service.name">Service Name</div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-500 truncate max-w-xs" x-text="service.description">Service Description</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900" x-text="service.duration + ' min'">Duration</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900" x-text="'$' + service.price.toFixed(2)">Price</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                                                          :class="service.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                                                          x-text="service.is_active ? 'Active' : 'Inactive'">Status</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <button @click="editService(service)" class="text-blue-600 hover:text-blue-900 mr-3">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button @click="confirmDeleteService(service)" class="text-red-600 hover:text-red-900">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </template>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </template>
-            </div>
-        </template>
-    </div>
-
-    <!-- Add/Edit Service Modal -->
-    <div x-show="showAddServiceModal || showEditServiceModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" x-cloak>
-        <div @click.away="showAddServiceModal = false; showEditServiceModal = false" class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
-            <div class="border-b border-gray-200 px-6 py-4">
-                <h3 class="text-lg font-semibold text-gray-800" x-text="showEditServiceModal ? 'Edit Service' : 'Add New Service'">Service Form</h3>
-            </div>
-
-            <div class="p-6">
-                <form @submit.prevent="showEditServiceModal ? updateService() : addService()">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Service Name -->
-                        <div class="col-span-2">
-                            <label for="serviceName" class="block text-sm font-medium text-gray-700 mb-1">Service Name*</label>
-                            <input type="text" id="serviceName" x-model="serviceForm.name" required
-                                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
-                        </div>
-
-                        <!-- Service Category -->
-                        <div>
-                            <label for="serviceCategory" class="block text-sm font-medium text-gray-700 mb-1">Category*</label>
-                            <select id="serviceCategory" x-model="serviceForm.category_id" required
-                                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
-                                <option value="" disabled>Select a category</option>
-                                <template x-for="category in categories" :key="category.id">
-                                    <option :value="category.id" x-text="category.name"></option>
-                                </template>
-                            </select>
-                        </div>
-
-                        <!-- Duration -->
-                        <div>
-                            <label for="serviceDuration" class="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)*</label>
-                            <input type="number" id="serviceDuration" x-model="serviceForm.duration" required min="1"
-                                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
-                        </div>
-
-                        <!-- Buffer Time -->
-                        <div>
-                            <label for="serviceBuffer" class="block text-sm font-medium text-gray-700 mb-1">Buffer Time (minutes)</label>
-                            <input type="number" id="serviceBuffer" x-model="serviceForm.buffer_time" min="0"
-                                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
-                        </div>
-
-                        <!-- Price -->
-                        <div>
-                            <label for="servicePrice" class="block text-sm font-medium text-gray-700 mb-1">Price ($)*</label>
-                            <input type="number" id="servicePrice" x-model="serviceForm.price" required min="0" step="0.01"
-                                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
-                        </div>
-
-                        <!-- Max Clients -->
-                        <div>
-                            <label for="serviceMaxClients" class="block text-sm font-medium text-gray-700 mb-1">Maximum Clients</label>
-                            <input type="number" id="serviceMaxClients" x-model="serviceForm.max_clients" min="1"
-                                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
-                        </div>
-
-                        <!-- Active Status -->
-                        <div>
-                            <label for="serviceStatus" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                            <div class="flex items-center mt-2">
-                                <div class="form-check form-switch">
-                                    <input id="serviceStatus" type="checkbox" x-model="serviceForm.is_active"
-                                           class="h-5 w-10 rounded-full bg-gray-300 focus:ring-0 cursor-pointer transition-colors duration-200 ease-in-out">
-                                    <span class="ml-2 text-sm text-gray-600" x-text="serviceForm.is_active ? 'Active' : 'Inactive'"></span>
-                                </div>
+        <!-- Service Cards -->
+        <div x-show="!loading && !error && filteredServices.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <template x-for="service in filteredServices" :key="service.id">
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <div class="p-5">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900" x-text="service.name"></h3>
+                                <p class="text-sm text-blue-600 mb-2" x-text="getCategoryName(service.category_id)"></p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button @click="editService(service)" class="text-gray-500 hover:text-blue-500 focus:outline-none">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button @click="confirmDeleteService(service.id)" class="text-gray-500 hover:text-red-500 focus:outline-none">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
                             </div>
                         </div>
 
-                        <!-- Description -->
-                        <div class="col-span-2">
-                            <label for="serviceDescription" class="block text-sm font-medium text-gray-700 mb-1">Description*</label>
-                            <textarea id="serviceDescription" x-model="serviceForm.description" rows="4" required
-                                      class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"></textarea>
+                        <p class="text-gray-600 text-sm mb-3" x-text="service.description"></p>
+
+                        <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+                            <div class="text-gray-800 font-medium">
+                                <span x-text="formatPrice(service.price)"></span>
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                <span x-text="service.duration"></span> minutes
+                            </div>
                         </div>
                     </div>
+                </div>
+            </template>
+        </div>
+    </div>
 
-                    <!-- Form Actions -->
-                    <div class="mt-8 flex justify-end space-x-3">
-                        <button type="button" @click="showAddServiceModal = false; showEditServiceModal = false"
-                                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 transition duration-200">
-                            Cancel
-                        </button>
-                        <button type="submit"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200">
-                            <span x-text="showEditServiceModal ? 'Update Service' : 'Add Service'">Submit</span>
-                        </button>
-                    </div>
-                </form>
+    <!-- Add/Edit Service Modal -->
+    <div x-show="showAddServiceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style="display: none;">
+        <div @click.away="showAddServiceModal = false" class="bg-white rounded-lg shadow-xl max-w-lg w-full mx-auto overflow-hidden" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-90" x-transition:enter-end="opacity-100 transform scale-100">
+            <div class="px-6 py-4 bg-blue-600 text-white flex justify-between items-center">
+                <h3 class="text-lg font-medium" x-text="editingService ? 'Edit Service' : 'Add New Service'"></h3>
+                <button @click="showAddServiceModal = false" class="text-white hover:text-gray-200 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
+
+            <form @submit.prevent="saveService()" class="p-6 space-y-4">
+                <!-- Name Field -->
+                <div>
+                    <label for="service-name" class="block text-sm font-medium text-gray-700 mb-1">Service Name</label>
+                    <input type="text" id="service-name" x-model="serviceForm.name" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                </div>
+
+                <!-- Category Field -->
+                <div>
+                    <label for="service-category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select id="service-category" x-model="serviceForm.category_id" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        <option value="" disabled>Select a category</option>
+                        <template x-for="category in categories" :key="category.id">
+                            <option :value="category.id" x-text="category.name"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <!-- Description Field -->
+                <div>
+                    <label for="service-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="service-description" x-model="serviceForm.description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+
+                <!-- Price and Duration Fields -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="service-price" class="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
+                        <input type="number" id="service-price" x-model="serviceForm.price" min="0" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="service-duration" class="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
+                        <input type="number" id="service-duration" x-model="serviceForm.duration" min="5" step="5" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                </div>
+
+                <!-- Form Buttons -->
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" @click="showAddServiceModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <span x-text="editingService ? 'Update' : 'Add'"></span> Service
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div x-show="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" x-cloak>
-        <div @click.away="showDeleteModal = false" class="bg-white rounded-lg shadow-xl max-w-md w-full">
+    <div x-show="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style="display: none;">
+        <div @click.away="showDeleteModal = false" class="bg-white rounded-lg shadow-xl max-w-md w-full mx-auto overflow-hidden" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-90" x-transition:enter-end="opacity-100 transform scale-100">
+            <div class="px-6 py-4 bg-red-600 text-white">
+                <h3 class="text-lg font-medium">Confirm Deletion</h3>
+            </div>
+
             <div class="p-6">
-                <div class="text-center">
-                    <i class="fas fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Delete Service</h3>
-                    <p class="text-gray-600 mb-6">Are you sure you want to delete "<span x-text="serviceToDelete?.name"></span>"? This action cannot be undone.</p>
-                </div>
-                <div class="flex justify-center space-x-4">
-                    <button @click="showDeleteModal = false" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 transition duration-200">
+                <p class="text-gray-700 mb-6">Are you sure you want to delete this service? This action cannot be undone.</p>
+
+                <div class="flex justify-end space-x-3">
+                    <button @click="showDeleteModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                         Cancel
                     </button>
-                    <button @click="deleteService()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-200">
+                    <button @click="deleteService()" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                         Delete
                     </button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Toast Notification -->
-    <div x-show="showToast"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 transform translate-y-2"
-         x-transition:enter-end="opacity-100 transform translate-y-0"
-         x-transition:leave="transition ease-in duration-100"
-         x-transition:leave-start="opacity-100 transform translate-y-0"
-         x-transition:leave-end="opacity-0 transform translate-y-2"
-         @mouseover="clearTimeout(toastTimeout)"
-         @mouseleave="setToastTimeout()"
-         class="fixed bottom-4 right-4 z-50 max-w-md shadow-lg rounded-lg overflow-hidden"
-         :class="{'bg-green-50': toastType === 'success', 'bg-red-50': toastType === 'error'}"
-         x-cloak>
-        <div class="p-4 flex items-start">
-            <div class="flex-shrink-0 mr-3" :class="{'text-green-500': toastType === 'success', 'text-red-500': toastType === 'error'}">
-                <i class="fas" :class="{'fa-check-circle': toastType === 'success', 'fa-exclamation-circle': toastType === 'error'}"></i>
-            </div>
-            <div>
-                <p class="font-medium" :class="{'text-green-800': toastType === 'success', 'text-red-800': toastType === 'error'}" x-text="toastTitle"></p>
-                <p class="mt-1 text-sm" :class="{'text-green-700': toastType === 'success', 'text-red-700': toastType === 'error'}" x-text="toastMessage"></p>
-            </div>
-            <button @click="showToast = false" class="ml-4 text-gray-400 hover:text-gray-500">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </div>
 </main>
 
 <!-- Footer from index.html -->
-<footer class="bg-gray-900 text-white py-8">
-    <div class="container mx-auto px-4 text-center">
-        <p class="mb-4 text-gray-300">&copy; 2025 AppointScheduler. All rights reserved.</p>
-        <div class="flex justify-center space-x-7 mb-6">
-            <a href="https://facebook.com/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-500 transition duration-300 transform hover:scale-110">
-                <i class="fab fa-facebook-f fa-2x"></i>
-            </a>
-            <a href="https://x.com/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-400 transition duration-300 transform hover:scale-110">
-                <i class="fab fa-twitter fa-2x"></i>
-            </a>
-            <a href="https://linkedin.com/company/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-600 transition duration-300 transform hover:scale-110">
-                <i class="fab fa-linkedin-in fa-2x"></i>
-            </a>
-            <a href="#" class="text-gray-400 hover:text-red-600 transition duration-300 transform hover:scale-110">
-                <i class="fab fa-youtube fa-2x"></i>
-            </a>
-            <a href="#" class="text-gray-400 hover:text-pink-500 transition duration-300 transform hover:scale-110">
-                <i class="fab fa-instagram fa-2x"></i>
-            </a>
+<footer class="bg-white shadow-inner-top py-8">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-wrap justify-between">
+            <div class="w-full md:w-1/4 mb-6 md:mb-0">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">AppointScheduler</h3>
+                <p class="text-gray-600 mb-4">The easiest way to schedule and manage your appointments online.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-500 hover:text-blue-600 transition-colors duration-300">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-blue-400 transition-colors duration-300">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-pink-600 transition-colors duration-300">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-blue-700 transition-colors duration-300">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/4 mb-6 md:mb-0">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Links</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">Home</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">About Us</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">Services</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">Pricing</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="w-full md:w-1/4 mb-6 md:mb-0">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Support</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">FAQ</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">Help Center</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">Privacy Policy</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">Terms of Service</a></li>
+                </ul>
+            </div>
+
+            <div class="w-full md:w-1/4">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Newsletter</h3>
+                <p class="text-gray-600 mb-4">Subscribe to our newsletter for the latest updates.</p>
+                <form class="flex">
+                    <input type="email" placeholder="Your email" class="px-4 py-2 w-full rounded-l-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
         </div>
-        <p class="text-sm">
-            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Privacy Policy</a> |
-            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Terms of Service</a> |
-            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Contact Us</a> |
-            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">FAQ</a>
-        </p>
+
+        <div class="border-t border-gray-200 mt-8 pt-6 text-center text-gray-500 text-sm">
+            <p>&copy; 2023 AppointScheduler. All rights reserved.</p>
+        </div>
     </div>
 </footer>
 
 <script>
     function serviceManager() {
         return {
-            // API endpoints
-            apiBaseUrl: 'https://appointment-scheduler-backend-smss.onrender.com',
-            businessId: 1, // Assuming this is the business ID for the current user
-
-            // Data storage
-            businessData: {},
+            // Data
+            businessData: {
+                id: '',
+                name: '',
+                description: '',
+                created_at: ''
+            },
             services: [],
-            filteredServices: [],
             categories: [],
-            groupedServices: {},
-
-            // UI state
-            loading: true,
-            error: false,
-            errorMessage: '',
+            filteredServices: [],
             selectedCategory: 'all',
             searchQuery: '',
 
-            // Modal state
+            // UI States
+            loading: true,
+            error: false,
+            errorMessage: '',
             showAddServiceModal: false,
-            showEditServiceModal: false,
             showDeleteModal: false,
-            serviceToDelete: null,
 
-            // Form data
+            // Form Data
             serviceForm: {
+                id: null,
                 name: '',
                 description: '',
-                category_id: '',
-                duration: 60,
-                buffer_time: 15,
-                max_clients: 1,
-                price: 0,
-                is_active: true
+                price: '',
+                duration: 30,
+                category_id: ''
             },
+            editingService: false,
+            serviceToDeleteId: null,
 
-            // Toast notification
-            showToast: false,
-            toastType: 'success', // 'success' or 'error'
-            toastTitle: '',
-            toastMessage: '',
-            toastTimeout: null,
-
-            // Initialize data
+            // Initialization
             init() {
-                this.fetchData();
+                this.fetchBusinessData();
+                this.fetchCategories();
+                this.fetchServices();
             },
 
-            // Fetch all necessary data
-            async fetchData() {
-                this.loading = true;
-                this.error = false;
-
+            // API Calls
+            async fetchBusinessData() {
                 try {
-                    // Fetch business data, services, and categories in parallel
-                    const [businessResponse, servicesResponse, categoriesResponse] = await Promise.all([
-                        fetch(`${this.apiBaseUrl}/businesses/${this.businessId}`),
-                        fetch(`${this.apiBaseUrl}/services?business_id=${this.businessId}`),
-                        fetch(`${this.apiBaseUrl}/service-categories`)
-                    ]);
+                    // Mocked API call - Replace with actual API endpoint
+                    // const response = await fetch('/api/business');
+                    // const data = await response.json();
 
-                    if (!businessResponse.ok) throw new Error('Failed to load business data');
-                    if (!servicesResponse.ok) throw new Error('Failed to load services');
-                    if (!categoriesResponse.ok) throw new Error('Failed to load service categories');
-
-                    // Parse JSON responses
-                    this.businessData = await businessResponse.json();
-                    this.services = await servicesResponse.json();
-                    this.categories = await categoriesResponse.json();
-
-                    // Filter categories for this business
-                    this.categories = this.categories.filter(category => category.business_id === this.businessId);
-
-                    // Initial filtering
-                    this.filterServices();
-
-                } catch (err) {
-                    console.error('Error fetching data:', err);
+                    // Mocked data for demonstration
+                    setTimeout(() => {
+                        this.businessData = {
+                            id: 'BUS123456',
+                            name: 'Wellness Center',
+                            description: 'We provide a range of wellness and therapeutic services designed to improve your health and well-being.',
+                            created_at: '2023-01-15T00:00:00Z'
+                        };
+                    }, 500);
+                } catch (error) {
+                    console.error('Error fetching business data:', error);
                     this.error = true;
-                    this.errorMessage = err.message || 'Failed to load data. Please try again later.';
-                } finally {
+                    this.errorMessage = 'Failed to load business information.';
+                }
+            },
+
+            async fetchCategories() {
+                try {
+                    // Mocked API call - Replace with actual API endpoint
+                    // const response = await fetch('/api/categories');
+                    // const data = await response.json();
+
+                    // Mocked data for demonstration
+                    setTimeout(() => {
+                        this.categories = [
+                            { id: 1, name: 'Massage Therapy' },
+                            { id: 2, name: 'Physical Therapy' },
+                            { id: 3, name: 'Consultation' },
+                            { id: 4, name: 'Specialized Treatment' }
+                        ];
+                    }, 500);
+                } catch (error) {
+                    console.error('Error fetching categories:', error);
+                    this.error = true;
+                    this.errorMessage = 'Failed to load service categories.';
+                }
+            },
+
+            async fetchServices() {
+                try {
+                    // Mocked API call - Replace with actual API endpoint
+                    // const response = await fetch('/api/services');
+                    // const data = await response.json();
+
+                    // Mocked data for demonstration
+                    setTimeout(() => {
+                        this.services = [
+                            {
+                                id: 1,
+                                name: 'Deep Tissue Massage',
+                                description: 'Focused massage targeting deeper layers of muscle and connective tissue.',
+                                price: 85.00,
+                                duration: 60,
+                                category_id: 1
+                            },
+                            {
+                                id: 2,
+                                name: 'Swedish Massage',
+                                description: 'Gentle, relaxing massage focused on overall relaxation and stress relief.',
+                                price: 75.00,
+                                duration: 60,
+                                category_id: 1
+                            },
+                            {
+                                id: 3,
+                                name: 'Initial Consultation',
+                                description: 'Comprehensive evaluation of your health needs and treatment planning.',
+                                price: 120.00,
+                                duration: 90,
+                                category_id: 3
+                            },
+                            {
+                                id: 4,
+                                name: 'Sports Injury Rehabilitation',
+                                description: 'Specialized treatment for sports-related injuries and recovery.',
+                                price: 95.00,
+                                duration: 45,
+                                category_id: 2
+                            },
+                            {
+                                id: 5,
+                                name: 'Acupuncture Session',
+                                description: 'Traditional Chinese medicine treatment for pain management and wellness.',
+                                price: 110.00,
+                                duration: 60,
+                                category_id: 4
+                            }
+                        ];
+
+                        this.filteredServices = [...this.services];
+                        this.loading = false;
+                    }, 1000);
+                } catch (error) {
+                    console.error('Error fetching services:', error);
+                    this.error = true;
+                    this.errorMessage = 'Failed to load services.';
                     this.loading = false;
                 }
             },
 
-            // Filter services based on selected category and search query
+            // UI Functions
             filterServices() {
-                if (this.selectedCategory === 'all' && !this.searchQuery) {
-                    this.filteredServices = [...this.services];
-                } else {
-                    this.filteredServices = this.services.filter(service => {
-                        const matchesCategory = this.selectedCategory === 'all' ||
-                            service.category_id === parseInt(this.selectedCategory);
+                this.filteredServices = this.services.filter(service => {
+                    // Apply category filter
+                    const categoryMatch = this.selectedCategory === 'all' || service.category_id == this.selectedCategory;
 
-                        const matchesSearch = !this.searchQuery ||
-                            service.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                            service.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+                    // Apply search filter (if search query exists)
+                    const searchMatch = !this.searchQuery ||
+                        service.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                        service.description.toLowerCase().includes(this.searchQuery.toLowerCase());
 
-                        return matchesCategory && matchesSearch;
-                    });
-                }
-
-                // Group services by category
-                this.groupServicesByCategory();
+                    return categoryMatch && searchMatch;
+                });
             },
 
-            // Reset all filters
             resetFilters() {
                 this.selectedCategory = 'all';
                 this.searchQuery = '';
                 this.filterServices();
             },
 
-            // Group services by their categories
-            groupServicesByCategory() {
-                this.groupedServices = {};
-
-                this.filteredServices.forEach(service => {
-                    const categoryId = service.category_id;
-
-                    if (!this.groupedServices[categoryId]) {
-                        this.groupedServices[categoryId] = [];
-                    }
-
-                    this.groupedServices[categoryId].push(service);
-                });
-            },
-
-            // Get category name by ID
-            getCategoryName(categoryId) {
-                const category = this.categories.find(cat => cat.id === parseInt(categoryId));
-                return category ? category.name : 'Uncategorized';
-            },
-
-            // Format date string
-            formatDate(dateString) {
-                if (!dateString) return '';
-                const date = new Date(dateString);
-                return date.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-            },
-
-            // Reset form data
-            resetForm() {
-                this.serviceForm = {
-                    name: '',
-                    description: '',
-                    category_id: this.categories.length > 0 ? this.categories[0].id : '',
-                    duration: 60,
-                    buffer_time: 15,
-                    max_clients: 1,
-                    price: 0,
-                    is_active: true
-                };
-            },
-
-            // Open edit modal with service data
             editService(service) {
+                this.editingService = true;
                 this.serviceForm = { ...service };
-                this.showEditServiceModal = true;
+                this.showAddServiceModal = true;
             },
 
-            // Confirm service deletion
-            confirmDeleteService(service) {
-                this.serviceToDelete = service;
+            confirmDeleteService(serviceId) {
+                this.serviceToDeleteId = serviceId;
                 this.showDeleteModal = true;
             },
 
-            // Add a new service
-            async addService() {
+            // CRUD Operations
+            async saveService() {
                 try {
-                    // Create service object
-                    const newService = {
-                        ...this.serviceForm,
-                        business_id: this.businessId,
-                        price: parseFloat(this.serviceForm.price),
-                        duration: parseInt(this.serviceForm.duration),
-                        buffer_time: parseInt(this.serviceForm.buffer_time),
-                        max_clients: parseInt(this.serviceForm.max_clients)
-                    };
+                    if (this.editingService) {
+                        // Update existing service
+                        // Mocked API call - Replace with actual API endpoint
+                        // const response = await fetch(`/api/services/${this.serviceForm.id}`, {
+                        //     method: 'PUT',
+                        //     headers: { 'Content-Type': 'application/json' },
+                        //     body: JSON.stringify(this.serviceForm)
+                        // });
+                        // const updatedService = await response.json();
 
-                    // Simulate API call (in a real app, this would be a POST request)
-                    // const response = await fetch(`${this.apiBaseUrl}/services`, {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json'
-                    //     },
-                    //     body: JSON.stringify(newService)
-                    // });
+                        // Mocked update
+                        const index = this.services.findIndex(s => s.id === this.serviceForm.id);
+                        if (index !== -1) {
+                            this.services[index] = { ...this.serviceForm };
+                            alert('Service updated successfully!');
+                        }
+                    } else {
+                        // Add new service
+                        // Mocked API call - Replace with actual API endpoint
+                        // const response = await fetch('/api/services', {
+                        //     method: 'POST',
+                        //     headers: { 'Content-Type': 'application/json' },
+                        //     body: JSON.stringify(this.serviceForm)
+                        // });
+                        // const newService = await response.json();
 
-                    // if (!response.ok) throw new Error('Failed to add service');
-                    // const addedService = await response.json();
-
-                    // Simulate successful addition (for demo)
-                    const addedService = {
-                        ...newService,
-                        id: Math.max(0, ...this.services.map(s => s.id)) + 1,
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    };
-
-                    // Add to services array
-                    this.services.push(addedService);
-
-                    // Close modal and reset form
-                    this.showAddServiceModal = false;
-                    this.resetForm();
-
-                    // Show success toast
-                    this.showToastNotification('success', 'Service Added', 'The service has been added successfully.');
-
-                    // Update filtered services
-                    this.filterServices();
-
-                } catch (err) {
-                    console.error('Error adding service:', err);
-                    this.showToastNotification('error', 'Failed to Add Service', err.message || 'Something went wrong. Please try again.');
-                }
-            },
-
-            // Update an existing service
-            async updateService() {
-                try {
-                    const updatedService = {
-                        ...this.serviceForm,
-                        price: parseFloat(this.serviceForm.price),
-                        duration: parseInt(this.serviceForm.duration),
-                        buffer_time: parseInt(this.serviceForm.buffer_time),
-                        max_clients: parseInt(this.serviceForm.max_clients),
-                        updated_at: new Date().toISOString()
-                    };
-
-                    // Simulate API call (in a real app, this would be a PUT request)
-                    // const response = await fetch(`${this.apiBaseUrl}/services/${updatedService.id}`, {
-                    //     method: 'PUT',
-                    //     headers: {
-                    //         'Content-Type': 'application/json'
-                    //     },
-                    //     body: JSON.stringify(updatedService)
-                    // });
-
-                    // if (!response.ok) throw new Error('Failed to update service');
-                    // const result = await response.json();
-
-                    // Update service in the array
-                    const index = this.services.findIndex(s => s.id === updatedService.id);
-                    if (index !== -1) {
-                        this.services[index] = updatedService;
+                        // Mocked add
+                        const newService = {
+                            ...this.serviceForm,
+                            id: this.services.length + 1 // Generate fake ID
+                        };
+                        this.services.push(newService);
+                        alert('Service added successfully!');
                     }
 
-                    // Close modal
-                    this.showEditServiceModal = false;
-
-                    // Show success toast
-                    this.showToastNotification('success', 'Service Updated', 'The service has been updated successfully.');
-
-                    // Update filtered services
+                    // Reset form and state
                     this.filterServices();
-
-                } catch (err) {
-                    console.error('Error updating service:', err);
-                    this.showToastNotification('error', 'Failed to Update Service', err.message || 'Something went wrong. Please try again.');
+                    this.resetForm();
+                    this.showAddServiceModal = false;
+                } catch (error) {
+                    console.error('Error saving service:', error);
+                    alert('Failed to save service. Please try again.');
                 }
             },
 
-            // Delete a service
             async deleteService() {
-                if (!this.serviceToDelete) return;
-
                 try {
-                    // Simulate API call (in a real app, this would be a DELETE request)
-                    // const response = await fetch(`${this.apiBaseUrl}/services/${this.serviceToDelete.id}`, {
+                    // Mocked API call - Replace with actual API endpoint
+                    // await fetch(`/api/services/${this.serviceToDeleteId}`, {
                     //     method: 'DELETE'
                     // });
 
-                    // if (!response.ok) throw new Error('Failed to delete service');
-
-                    // Remove from services array
-                    this.services = this.services.filter(s => s.id !== this.serviceToDelete.id);
-
-                    // Close modal
-                    this.showDeleteModal = false;
-                    this.serviceToDelete = null;
-
-                    // Show success toast
-                    this.showToastNotification('success', 'Service Deleted', 'The service has been deleted successfully.');
-
-                    // Update filtered services
+                    // Mocked delete
+                    this.services = this.services.filter(s => s.id !== this.serviceToDeleteId);
                     this.filterServices();
-
-                } catch (err) {
-                    console.error('Error deleting service:', err);
-                    this.showToastNotification('error', 'Failed to Delete Service', err.message || 'Something went wrong. Please try again.');
+                    this.showDeleteModal = false;
+                    this.serviceToDeleteId = null;
+                    alert('Service deleted successfully!');
+                } catch (error) {
+                    console.error('Error deleting service:', error);
+                    alert('Failed to delete service. Please try again.');
                 }
             },
 
-            // Display toast notification
-            showToastNotification(type, title, message) {
-                this.toastType = type;
-                this.toastTitle = title;
-                this.toastMessage = message;
-                this.showToast = true;
-
-                this.setToastTimeout();
+            resetForm() {
+                this.serviceForm = {
+                    id: null,
+                    name: '',
+                    description: '',
+                    price: '',
+                    duration: 30,
+                    category_id: ''
+                };
+                this.editingService = false;
             },
 
-            // Set toast timeout
-            setToastTimeout() {
-                if (this.toastTimeout) {
-                    clearTimeout(this.toastTimeout);
-                }
+            // Helper Functions
+            formatDate(dateString) {
+                if (!dateString) return '';
+                const date = new Date(dateString);
+                return new Intl.DateTimeFormat('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }).format(date);
+            },
 
-                this.toastTimeout = setTimeout(() => {
-                    this.showToast = false;
-                }, 5000);
+            formatPrice(price) {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                }).format(price);
+            },
+
+            getCategoryName(categoryId) {
+                const category = this.categories.find(c => c.id == categoryId);
+                return category ? category.name : 'Uncategorized';
             }
         };
     }

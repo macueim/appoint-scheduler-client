@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AppointScheduler</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="flex flex-col min-h-screen bg-gray-100 font-sans antialiased">
+
+<header class="bg-white shadow-lg py-4">
+    <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center mb-4 md:mb-0">
+            <img src="../../public/images/logo.png" alt="AppointScheduler Logo" class="mr-2 rounded-full shadow-sm" style="height:50px; width:50px;">
+            <span class="text-2xl font-extrabold text-gray-900">AppointScheduler</span>
+        </div>
+
+        <div class="w-full md:w-1/3 mb-4 md:mb-0 relative">
+            <input type="text" placeholder="Search for services or providers..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+        </div>
+
+        <nav class="hidden md:flex space-x-2">
+            <a href="../index.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Home</a>
+            <a href="../../src/pages/about-us.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">About Us</a>
+            <a href="#" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Services</a>
+            <a href="#" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Your Cert.</a>
+            <a href="signup.html" class="text-blue-600 font-semibold py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Login/Sign Up</a>
+        </nav>
+
+        <div class="md:hidden" x-data="{ open: false }">
+            <button @click="open = !open" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+
+            <div x-show="open" @click.away="open = false" class="absolute top-44 right-4 bg-white shadow-lg rounded-md p-4 space-y-2 z-10 w-48 border border-gray-200">
+                <a href="../index.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Home</a>
+                <a href="../../src/pages/about-us.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">About Us</a>
+                <a href="#" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Services</a>
+                <a href="#" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Your Cert.</a>
+                <a href="signup.html" class="block text-blue-600 font-semibold py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm transition duration-300">Login/Sign Up</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow flex items-center justify-center p-4" x-data="loginForm()">
+    <div class="bg-white max-w-md w-full mx-auto p-8 rounded-lg shadow-xl border border-gray-200">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h1>
+            <p class="text-gray-600">Sign in to access your AppointScheduler account</p>
+        </div>
+
+        <form @submit.prevent="submitLogin" class="space-y-6">
+            <!-- Alert for errors -->
+            <div x-show="errorMessage" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded" x-transition>
+                <p x-text="errorMessage"></p>
+            </div>
+
+            <!-- Email Field -->
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-envelope text-gray-400"></i>
+                    </div>
+                    <input type="email" id="email" x-model="email" required
+                           class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"
+                           placeholder="you@example.com">
+                </div>
+            </div>
+
+            <!-- Password Field -->
+            <div>
+                <div class="flex justify-between">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors duration-300">Forgot password?</a>
+                </div>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-gray-400"></i>
+                    </div>
+                    <input :type="showPassword ? 'text' : 'password'" id="password" x-model="password" required
+                           class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300"
+                           placeholder="••••••••">
+                    <button type="button" @click="showPassword = !showPassword"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none" tabindex="-1">
+                        <i class="fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Remember Me -->
+            <div class="flex items-center">
+                <input id="remember_me" type="checkbox" x-model="rememberMe"
+                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                <label for="remember_me" class="ml-2 block text-sm text-gray-700">
+                    Remember me
+                </label>
+            </div>
+
+            <!-- Login Button -->
+            <div>
+                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:scale-105">
+                    <span x-show="!isSubmitting">Sign In</span>
+                    <span x-show="isSubmitting" class="inline-flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Processing...
+                        </span>
+                </button>
+            </div>
+
+            <!-- Social Login -->
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">Or continue with</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 mt-6">
+                    <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300">
+                        <i class="fab fa-google text-red-500"></i>
+                    </button>
+                    <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300">
+                        <i class="fab fa-facebook-f text-blue-600"></i>
+                    </button>
+                    <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300">
+                        <i class="fab fa-apple text-gray-800"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <p class="text-center mt-8 text-sm text-gray-600">
+            Don't have an account?
+            <a href="signup.html" class="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-300">
+                Sign up now
+            </a>
+        </p>
+    </div>
+</main>
+
+<footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center">
+        <p class="mb-4 text-gray-300">&copy; 2025 AppointScheduler. All rights reserved.</p>
+        <div class="flex justify-center space-x-7 mb-6">
+            <a href="https://facebook.com/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-500 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-facebook-f fa-2x"></i>
+            </a>
+            <a href="https://x.com/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-400 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-twitter fa-2x"></i>
+            </a>
+            <a href="https://linkedin.com/company/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-600 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-linkedin-in fa-2x"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-red-600 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-youtube fa-2x"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-pink-500 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-instagram fa-2x"></i>
+            </a>
+        </div>
+        <p class="text-sm">
+            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Privacy Policy</a> |
+            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Terms of Service</a> |
+            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Contact Us</a> |
+            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">FAQ</a>
+        </p>
+    </div>
+</footer>
+
+<script>
+    function loginForm() {
+        return {
+            email: '',
+            password: '',
+            rememberMe: false,
+            showPassword: false,
+            isSubmitting: false,
+            errorMessage: '',
+
+            submitLogin() {
+                this.isSubmitting = true;
+                this.errorMessage = '';
+
+                // Simulate API call with fetch
+                setTimeout(() => {
+                    // In a real application, use fetch to send data to your backend:
+                    /*
+                    fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email: this.email,
+                            password: this.password,
+                            remember_me: this.rememberMe
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Invalid credentials');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Store JWT token in localStorage or HttpOnly cookie (preferred)
+                        localStorage.setItem('auth_token', data.token);
+                        localStorage.setItem('user_role', data.role);
+
+                        // Redirect based on role
+                        if (data.role === 'provider') {
+                            window.location.href = '/dashboard/provider';
+                        } else if (data.role === 'client') {
+                            window.location.href = '/dashboard/client';
+                        } else {
+                            window.location.href = '/dashboard';
+                        }
+                    })
+                    .catch(error => {
+                        this.errorMessage = error.message;
+                        this.isSubmitting = false;
+                    });
+                    */
+
+                    // For demonstration purposes:
+                    if (this.email === 'user@example.com' && this.password === 'password') {
+                        // Success - redirect to dashboard
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        // Error
+                        this.errorMessage = 'Invalid email or password. Please try again.';
+                        this.isSubmitting = false;
+                    }
+                }, 1000);
+            }
+        };
+    }
+</script>
+</body>
+</html>
