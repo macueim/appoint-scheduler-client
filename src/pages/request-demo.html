@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request a Demo - AppointScheduler</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Add Flatpickr for date/time selection -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Add EmailJS for sending emails directly from client-side -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // Initialize EmailJS with your User ID
+            emailjs.init("YOUR_EMAILJS_USER_ID"); // Replace with your actual EmailJS User ID
+        })();
+    </script>
+</head>
+<body class="flex flex-col min-h-screen bg-gray-100 font-sans antialiased">
+
+<!-- Header (Same as index.html) -->
+ <header class="bg-white shadow-lg py-4">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <img src="../../public/images/logo.png" alt="AppointScheduler Logo" class="mr-2 rounded-full shadow-sm" style="height:50px; width:50px;">
+
+                <span class="text-2xl font-extrabold text-gray-900">AppointScheduler</span>
+            </div>
+            <div class="w-full md:w-1/3 mb-4 md:mb-0 relative">
+                <form id="searchForm" action="search-results.html" method="get" onsubmit="return validateSearch()">
+                    <input type="text" id="searchInput" name="query" placeholder="Search for services or providers..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <button type="submit" class="hidden">Search</button>
+                </form>
+                <script>
+                    function validateSearch() {
+                        const searchInput = document.getElementById('searchInput');
+                        const query = searchInput.value.trim();
+
+                        if (query === '') {
+                            return false; // Prevent form submission if search is empty
+                        }
+                        return true; // Allow form submission
+                    }
+                </script>
+            </div>
+            <nav class="hidden md:flex space-x-2">
+                <a href="../../index.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Home</a>
+                <a href="about-us.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">About Us</a>
+                <a href="services.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Services</a>
+                <a href="cart.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Your Cart</a>
+                <a href="login.html" class="text-blue-600 font-semibold py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Login/Sign Up</a>
+            </nav>
+
+            <div class="md:hidden" x-data="{ open: false }">
+                <button @click="open = !open" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+
+                <div x-show="open" @click.away="open = false" class="absolute top-44 right-4 bg-white shadow-lg rounded-md p-4 space-y-2 z-10 w-48 border border-gray-200">
+                    <a href="../../index.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Home</a>
+                    <a href="about-us.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">About Us</a>
+                    <a href="services.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Services</a>
+                    <a href="cart.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Your Cart.</a>
+                    <a href="login.html" class="block text-blue-600 font-semibold py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm transition duration-300">Login/Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+<!-- Main content section with the form -->
+<main class="flex-grow py-12 px-4">
+    <div class="container mx-auto max-w-3xl">
+        <div class="bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
+            <!-- Form header -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-8 text-white">
+                <h1 class="text-3xl font-bold">Request a Demo</h1>
+                <p class="mt-2 text-blue-100">
+                    Fill out this form to schedule a personalized demonstration of AppointScheduler's features.
+                </p>
+            </div>
+
+            <!-- Form content -->
+            <div class="p-6 md:p-8" x-data="{
+                    fullName: '',
+                    email: '',
+                    phone: '',
+                    dateTime: '',
+                    message: '',
+                    submitted: false,
+                    loading: false,
+                    errors: {
+                        fullName: false,
+                        email: false,
+                        phone: false,
+                        dateTime: false
+                    },
+                    validateForm() {
+                        let valid = true;
+                        this.errors.fullName = !this.fullName.trim();
+                        this.errors.email = !this.email.trim() || !this.email.includes('@');
+                        this.errors.phone = !this.phone.trim();
+                        this.errors.dateTime = !this.dateTime;
+
+                        return !this.errors.fullName && !this.errors.email && !this.errors.phone && !this.errors.dateTime;
+                    },
+                    submitForm() {
+                        if (!this.validateForm()) return;
+
+                        this.loading = true;
+
+                        // Prepare template parameters for EmailJS
+                        const templateParams = {
+                            to_name: this.fullName,
+                            to_email: this.email,
+                            user_name: this.fullName,
+                            user_email: this.email,
+                            user_phone: this.phone,
+                            preferred_datetime: this.dateTime,
+                            message: this.message || 'No additional information provided',
+                            admin_email: 'maccueidit@gmail.com'
+                        };
+
+                        // Send confirmation email to visitor using EmailJS
+                        emailjs.send('YOUR_SERVICE_ID', 'YOUR_VISITOR_TEMPLATE_ID', templateParams)
+                            .then(() => {
+                                // Send notification email to admin
+                                return emailjs.send('YOUR_SERVICE_ID', 'YOUR_ADMIN_TEMPLATE_ID', templateParams);
+                            })
+                            .then(() => {
+                                this.loading = false;
+                                this.submitted = true;
+                            })
+                            .catch((error) => {
+                                console.error('Error sending email:', error);
+                                this.loading = false;
+                                alert('There was an error submitting your form. Please try again later.');
+                            });
+                    }
+                }" x-init="() => {
+                    // Initialize flatpickr for date and time selection
+                    flatpickr('#dateTimePicker', {
+                        enableTime: true,
+                        dateFormat: 'Y-m-d H:i',
+                        minDate: 'today',
+                        time_24hr: false,
+                        minuteIncrement: 30,
+                        onChange: function(selectedDates, dateStr) {
+                            $data.dateTime = dateStr;
+                        }
+                    });
+                }">
+                <!-- Success message -->
+                <div x-show="submitted" class="bg-green-50 text-green-700 p-6 rounded-lg mb-6 border border-green-200 text-center">
+                    <svg class="h-12 w-12 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2">Thank You!</h3>
+                    <p class="mb-4">Your demo request has been submitted successfully. You will receive a confirmation email shortly.</p>
+                    <button @click="submitted = false; fullName = ''; email = ''; phone = ''; dateTime = ''; message = ''" class="text-blue-600 underline hover:text-blue-800 font-medium">Submit another request</button>
+                </div>
+
+                <!-- Form fields -->
+                <form x-show="!submitted" @submit.prevent="submitForm" class="space-y-6">
+                    <!-- Full Name field -->
+                    <div>
+                        <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+                        <input
+                                type="text"
+                                id="fullName"
+                                x-model="fullName"
+                                class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+                                :class="{'border-red-300 bg-red-50': errors.fullName, 'border-gray-300': !errors.fullName}"
+                                placeholder="John Doe"
+                        >
+                        <p x-show="errors.fullName" class="mt-1 text-sm text-red-600">Please enter your full name</p>
+                    </div>
+
+                    <!-- Email field -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address <span class="text-red-500">*</span></label>
+                        <input
+                                type="email"
+                                id="email"
+                                x-model="email"
+                                class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+                                :class="{'border-red-300 bg-red-50': errors.email, 'border-gray-300': !errors.email}"
+                                placeholder="your.email@example.com"
+                        >
+                        <p x-show="errors.email" class="mt-1 text-sm text-red-600">Please enter a valid email address</p>
+                    </div>
+
+                    <!-- Phone field -->
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number <span class="text-red-500">*</span></label>
+                        <input
+                                type="tel"
+                                id="phone"
+                                x-model="phone"
+                                class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+                                :class="{'border-red-300 bg-red-50': errors.phone, 'border-gray-300': !errors.phone}"
+                                placeholder="(123) 456-7890"
+                        >
+                        <p x-show="errors.phone" class="mt-1 text-sm text-red-600">Please enter your phone number</p>
+                    </div>
+
+                    <!-- Date and Time field -->
+                    <div>
+                        <label for="dateTimePicker" class="block text-sm font-medium text-gray-700 mb-1">Preferred Date and Time for Contact <span class="text-red-500">*</span></label>
+                        <input
+                                type="text"
+                                id="dateTimePicker"
+                                class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+                                :class="{'border-red-300 bg-red-50': errors.dateTime, 'border-gray-300': !errors.dateTime}"
+                                placeholder="Select date and time"
+                                readonly
+                        >
+                        <p x-show="errors.dateTime" class="mt-1 text-sm text-red-600">Please select a preferred date and time</p>
+                        <p class="mt-1 text-xs text-gray-500">Please select a date and time during business hours (9AM-5PM)</p>
+                    </div>
+
+                    <!-- Additional message field (optional) -->
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Additional Information (optional)</label>
+                        <textarea
+                                id="message"
+                                rows="4"
+                                x-model="message"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+                                placeholder="Tell us more about your specific needs or questions..."
+                        ></textarea>
+                    </div>
+
+                    <!-- Submit button -->
+                    <div class="pt-4">
+                        <button
+                                type="submit"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-[1.02] transition duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-300 flex justify-center items-center"
+                                :disabled="loading"
+                        >
+                            <span x-show="!loading">Submit Request</span>
+                            <span x-show="loading" class="flex items-center">
+                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Processing...
+                                </span>
+                        </button>
+                    </div>
+
+                    <!-- Privacy notice -->
+                    <div class="text-center text-sm text-gray-500">
+                        <p>By submitting this form, you agree to our <a href="#" class="text-blue-600 hover:underline">Privacy Policy</a> and consent to be contacted about our services.</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Information cards -->
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col items-center text-center">
+                <div class="bg-blue-100 p-3 rounded-full mb-4">
+                    <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">See It in Action</h3>
+                <p class="text-gray-600">Experience a personalized walkthrough of our platform tailored to your business needs.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col items-center text-center">
+                <div class="bg-indigo-100 p-3 rounded-full mb-4">
+                    <svg class="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Schedule at Your Convenience</h3>
+                <p class="text-gray-600">Choose a time that works for you. Our team is flexible to accommodate your schedule.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 flex flex-col items-center text-center">
+                <div class="bg-green-100 p-3 rounded-full mb-4">
+                    <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">No Obligation</h3>
+                <p class="text-gray-600">Our demos are completely free with no obligation to purchase afterwards.</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Footer section from index.html -->
+<footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center">
+        <p class="mb-4 text-gray-300">&copy; 2025 AppointScheduler. All rights reserved.</p>
+        <div class="flex justify-center space-x-7 mb-6">
+            <a href="https://facebook.com/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-500 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-facebook-f fa-2x"></i>
+            </a>
+            <a href="https://x.com/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-400 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-twitter fa-2x"></i>
+            </a>
+            <a href="https://linkedin.com/company/AppointScheduler" target="_blank" class="text-gray-400 hover:text-blue-600 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-linkedin-in fa-2x"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-red-600 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-youtube fa-2x"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-pink-500 transition duration-300 transform hover:scale-110">
+                <i class="fab fa-instagram fa-2x"></i>
+            </a>
+        </div>
+        <p class="text-sm">
+            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Privacy Policy</a> |
+            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Terms of Service</a> |
+            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">Contact Us</a> |
+            <a href="#" class="text-gray-400 hover:text-white mx-3 transition duration-300">FAQ</a>
+        </p>
+    </div>
+</footer>
+</body>
+</html>

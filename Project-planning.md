@@ -381,14 +381,14 @@ These authentication pages and recommendations provide a solid foundation for se
 
 ## Prompt to create a client page for appointment booking or scheduling
 
-a.	Background: I want you to build a client page user interface that use the endpoint APIs provided. I want to use HTML5, Tailwind CSS and Alpine JS for building the user interface of this page.
+a.	Background: I want you to build a client page user interface that use the endpoint APIs provided. I want to use HTML5, Tailwind CSS, and Alpine JS for building the user interface of this page.
 
 b.	Context:
-Overall, I am building a small business scheduler application that is a full-stack and responsive. I want you to help me build a frontend page for clients to view services, search and filter services, select services by adding to the cert, view added services/appointments, book them with one click after login or signing up.
+Overall, I am building a small business scheduler application that is a full-stack and responsive. I want you to help me build a frontend page for clients to view services, search and filter services, select services by adding to the cert, view added services/appointments, book them with one click after login, or signing up.
 
 
 c.	Tasks:
--	I want you to Build a client page using the provided stack like HTML5, Tailwind CSS for styling and Alpine JS for interactivity.
+-	I want you to Build a client page using the provided stack like HTML5, Tailwind CSS for styling, and Alpine JS for interactivity.
 -  Use header and footer of index.html page 
 -	Allow clients to perform generic CRUD operations on their booked appointments like adding appointments, displaying appointment information, editing appointment info and deleting or removing it.
 -	To display services using the following API URL: https://appointment-scheduler-backend-smss.onrender.com/services
@@ -522,3 +522,115 @@ The response is coming back in JSON format as the following:
 ...
 ]
 "
+
+
+
+## Services Page:
+
+I want you to build a service page that allows business to perform CRUD operations on services.
+- use HTML5, Tailwind CSS for styling, and Alpine JS for interactivity
+- the title for this page is "Business Provider" and displays the business name.
+-  Allow search, filtering, and reset for services
+- Use pagination for this page
+- Make the Service Provider page professional in look and feel
+- Integrate header and footer of the index.html page
+
+- Services data can be found using this URL/Endpoint:https://appointment-scheduler-backend-smss.onrender.com/services
+The response is coming back in JSON format as the following:
+
+"[
+    {
+        "id": 1,
+        "business_id": 1,
+        "category_id": 1,
+        "name": "Swedish Massage",
+        "description": "60-minute full body massage using gentle pressure and long strokes to promote relaxation.",
+        "duration": 60,
+        "buffer_time": 15,
+        "max_clients": 1,
+        "price": 85.0,
+        "is_active": true,
+        "created_at": "2025-04-28T18:11:58.027757Z",
+        "updated_at": "2025-04-28T18:11:58.027757Z"
+    },
+...
+]
+"
+- Business data can be found using this url/API endpoint: https://appointment-scheduler-backend-smss.onrender.com/businesses
+The response is coming back in JSON format as the following:
+
+"
+[
+    {
+        "id": 3,
+        "name": "Serene Dental Care",
+        "address": "789 Healthcare Blvd, Miami, FL 33130",
+        "phone": "(305) 555-9876",
+        "email": "reception@serenedental.com",
+        "website": "www.serenedental.com",
+        "timezone": "America/New_York",
+        "cancellation_policy": "A 48-hour notice is required for cancellation. Late cancellations may incur a $50 fee.",
+        "created_at": "2025-04-28T18:11:28.857151Z",
+        "updated_at": "2025-04-28T18:11:28.857151Z"
+    },
+...
+]
+"
+
+- Service categories can be found using the following URL/endpoint API:https://appointment-scheduler-backend-smss.onrender.com/service-categories
+- The response to the above call is coming back in JSON format as the following:
+"
+[
+    {
+        "id": 1,
+        "business_id": 1,
+        "name": "Massage Therapy",
+        "description": "Relax and rejuvenate with our range of massage treatments designed to reduce stress and tension.",
+        "created_at": "2025-04-28T18:11:49.990330Z",
+        "updated_at": "2025-04-28T18:11:49.990330Z"
+    },
+...
+]
+"
+
+
+## Request for Demo page:
+
+I want to build a request for demo page that allow visitor to enter full name, 
+phone number, email, a season for contacting us.
+- the page should send out two email about submission, one to the visitor and other to the 
+web administartor at maccueidit@gmail.com.
+- the page should use header and footer of the index.html page
+- Use HTML5, Tailwind CSS staying and Alpine js for interactivity
+- Make it a professional form in its look and feel 
+
+
+
+## Your Cert page:
+I want you to create a cert page using the following technology stack:
+- use HTML5, Tailwind CSS for styling and Alpine js for interactivity.
+-  Integrate header and footer of the index.html page 
+- Simulate a shoping cert with few added services like haircut and dog walking service 
+- Allow user to view it, edit it by modifying quantity, add payment and click "Book it" to submit the added services
+- Make it a professional page in its look and feel.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

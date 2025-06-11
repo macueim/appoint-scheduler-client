@@ -13,25 +13,38 @@
     <header class="bg-white shadow-lg py-4">
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
             <div class="flex items-center mb-4 md:mb-0">
-                <img src="../public/images/logo.png" alt="AppointScheduler Logo" class="mr-2 rounded-full shadow-sm" style="height:50px; width:50px;">
+                <img src="public/images/logo.png" alt="AppointScheduler Logo" class="mr-2 rounded-full shadow-sm" style="height:50px; width:50px;">
 
                 <span class="text-2xl font-extrabold text-gray-900">AppointScheduler</span>
             </div>
-
             <div class="w-full md:w-1/3 mb-4 md:mb-0 relative">
-                <input type="text" placeholder="Search for services or providers..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-                    </svg>
-                </div>
-            </div
+                <form id="searchForm" action="src/pages/search-results.html" method="get" onsubmit="return validateSearch()">
+                    <input type="text" id="searchInput" name="query" placeholder="Search for services or providers..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <button type="submit" class="hidden">Search</button>
+                </form>
+                <script>
+                    function validateSearch() {
+                        const searchInput = document.getElementById('searchInput');
+                        const query = searchInput.value.trim();
+
+                        if (query === '') {
+                            return false; // Prevent form submission if search is empty
+                        }
+                        return true; // Allow form submission
+                    }
+                </script>
+            </div>
             <nav class="hidden md:flex space-x-2">
                 <a href="index.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Home</a>
-                <a href="../src/pages/about-us.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">About Us</a>
-                <a href="#" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Services</a>
-                <a href="#" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Your Cert.</a>
-                <a href="../src/pages/login.html" class="text-blue-600 font-semibold py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Login/Sign Up</a>
+                <a href="src/pages/about-us.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">About Us</a>
+                <a href="src/pages/services.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Services</a>
+                <a href="src/pages/Cart.html" class="text-gray-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Your Cart.</a>
+                <a href="src/pages/login.html" class="text-blue-600 font-semibold py-2 px-4 rounded-lg hover:bg-blue-50 hover:text-blue-700 hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out">Login/Sign Up</a>
             </nav>
 
             <div class="md:hidden" x-data="{ open: false }">
@@ -43,10 +56,10 @@
 
                 <div x-show="open" @click.away="open = false" class="absolute top-44 right-4 bg-white shadow-lg rounded-md p-4 space-y-2 z-10 w-48 border border-gray-200">
                     <a href="index.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Home</a>
-                    <a href="../src/pages/about-us.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">About Us</a>
-                    <a href="#" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Services</a>
-                    <a href="#" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Your Cert.</a>
-                    <a href="../src/pages/login.html" class="block text-blue-600 font-semibold py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm transition duration-300">Login/Sign Up</a>
+                    <a href="src/pages/about-us.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">About Us</a>
+                    <a href="src/pages/services.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Services</a>
+                    <a href="src/pages/Cart.html" class="block text-gray-700 font-medium py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm transition duration-300">Your Cart</a>
+                    <a href="src/pages/login.html" class="block text-blue-600 font-semibold py-2 px-3 rounded-md hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm transition duration-300">Login/Sign Up</a>
                 </div>
             </div>
         </div>
@@ -61,10 +74,10 @@
                 AppointScheduler seamlessly connects service providers with clients, offering intuitive tools for booking, management, and growth. Experience efficiency, reliability, and unparalleled convenience.
             </p>
             <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-8">
-            <a href="https://example.com/service-provider" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-xl transform hover:scale-105 transition duration-300 ease-in-out text-lg focus:outline-none focus:ring-4 focus:ring-blue-300">
+            <a href="src/pages/services.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-xl transform hover:scale-105 transition duration-300 ease-in-out text-lg focus:outline-none focus:ring-4 focus:ring-blue-300">
              I am a Service Provider
             </a>
-            <a href="../src/pages/client.html" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow-xl transform hover:scale-105 transition duration-300 ease-in-out text-lg focus:outline-none focus:ring-4 focus:ring-indigo-300">
+            <a href="src/pages/client.html" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow-xl transform hover:scale-105 transition duration-300 ease-in-out text-lg focus:outline-none focus:ring-4 focus:ring-indigo-300">
             I am a Service Seeker
            </a>
           </div>
